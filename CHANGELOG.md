@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Story: 4.6 - Move Hybrid-Ops to Separate Repository
 - Breaking Change: hybrid-ops no longer bundled with aios-fullstack
 - Migration: Users can install from external repo to `expansion-packs/hybrid-ops/`
-- Future: Story 4.7 will remove `expansion-packs/hybrid-ops.legacy/`
+- Story: 4.7 - Removed `expansion-packs/hybrid-ops.legacy/` directory (legacy backup no longer needed)
 
 ## [4.31.1] - 2025-10-22
 
