@@ -171,6 +171,11 @@ dependencies:
 
   coderabbit_integration:
     enabled: true
+    installation_mode: wsl
+    wsl_config:
+      distribution: Ubuntu
+      installation_path: ~/.local/bin/coderabbit
+      working_directory: /mnt/c/Users/AllFluence-User/Workspaces/AIOS/AIOS-V4/aios-fullstack
     usage:
       - Pre-commit quality check - run before marking story complete
       - Catch issues early - find bugs, security issues, code smells during development
@@ -178,13 +183,27 @@ dependencies:
       - Reduce rework - fix issues before QA review
     workflow: |
       Before marking story "Ready for Review":
-      1. Run: coderabbit --prompt-only -t uncommitted
+      1. Run: wsl bash -c 'cd /mnt/c/Users/AllFluence-User/Workspaces/AIOS/AIOS-V4/aios-fullstack && ~/.local/bin/coderabbit --prompt-only -t uncommitted'
       2. Fix CRITICAL issues immediately
       3. Document HIGH issues in story Dev Notes
       4. MEDIUM/LOW issues optional to fix
       5. Then mark story complete
     commands:
-      - "coderabbit --prompt-only -t uncommitted"  # Review uncommitted changes
+      dev_pre_commit_uncommitted: "wsl bash -c 'cd /mnt/c/Users/AllFluence-User/Workspaces/AIOS/AIOS-V4/aios-fullstack && ~/.local/bin/coderabbit --prompt-only -t uncommitted'"
+    execution_guidelines: |
+      CRITICAL: CodeRabbit CLI is installed in WSL, not Windows.
+
+      **How to Execute:**
+      1. Use 'wsl bash -c' wrapper for all commands
+      2. Navigate to project directory in WSL path format (/mnt/c/...)
+      3. Use full path to coderabbit binary (~/.local/bin/coderabbit)
+
+      **Timeout:** 15 minutes (900000ms) - CodeRabbit reviews take 7-30 min
+
+      **Error Handling:**
+      - If "coderabbit: command not found" → verify wsl_config.installation_path
+      - If timeout → increase timeout, review is still processing
+      - If "not authenticated" → user needs to run: wsl bash -c '~/.local/bin/coderabbit auth status'
     report_location: docs/qa/coderabbit-reports/
     integration_point: "Part of story completion workflow in develop-story.md"
 
