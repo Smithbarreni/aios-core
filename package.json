@@ -19,6 +19,7 @@
   "files": [
     "bin/",
     "src/",
+    "packages/",
     "install/",
     "tools/",
     "templates/",
