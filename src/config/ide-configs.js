@@ -50,9 +50,9 @@ const IDE_CONFIGS = {
   cursor: {
     name: 'Cursor',
     description: 'AI-first code editor with built-in AI assistant',
-    configFile: '.cursorrules',
+    configFile: path.join('.cursor', 'rules.md'),
     template: 'ide-rules/cursor-rules.md',
-    requiresDirectory: false,
+    requiresDirectory: true,
     format: 'text',
     agentFolder: path.join('.cursor', 'rules')
   },

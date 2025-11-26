@@ -150,6 +150,41 @@ function getEnvironmentQuestions() {
 }
 
 /**
+ * Get Expansion Pack selection questions
+ *
+ * Available expansion packs for v2.1:
+ * - expansion-creator: Tools to create custom expansion packs
+ * - etl: ETL pipeline for knowledge base creation
+ *
+ * @returns {Object[]} Array of inquirer question objects
+ */
+function getExpansionPackQuestions() {
+  return [
+    {
+      type: 'checkbox',
+      name: 'selectedExpansionPacks',
+      message: colors.primary('Select Expansion Packs to install (optional):'),
+      choices: [
+        {
+          name: colors.highlight('expansion-creator') + colors.dim(' - Tools to create custom expansion packs'),
+          value: 'expansion-creator',
+          checked: false
+        },
+        {
+          name: colors.highlight('etl') + colors.dim(' - ETL pipeline for knowledge base creation'),
+          value: 'etl',
+          checked: false
+        }
+      ],
+      validate: () => {
+        // Allow empty selection (user can skip expansion pack installation)
+        return true;
+      }
+    }
+  ];
+}
+
+/**
  * Build complete question sequence
  * Allows conditional questions based on previous answers
  *
@@ -167,6 +202,9 @@ function buildQuestionSequence(_context = {}) {
 
   // Story 1.5/1.8: MCP Selection
   questions.push(...getMCPQuestions());
+
+  // Expansion Pack Selection (v2.1)
+  questions.push(...getExpansionPackQuestions());
 
   // Story 1.7: Package Manager - Auto-detected (no question needed)
   // The wizard will auto-detect and use the appropriate package manager
@@ -202,6 +240,7 @@ module.exports = {
   getProjectTypeQuestion,
   getIDEQuestions,
   getMCPQuestions,
+  getExpansionPackQuestions,
   getEnvironmentQuestions,
   getPackageManagerQuestion,
   buildQuestionSequence,

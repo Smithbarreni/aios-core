@@ -1,13 +1,15 @@
 /**
  * AIOS Interactive Wizard - Main Entry Point
- * 
+ *
  * Story 1.2: Interactive Wizard Foundation
  * Provides core wizard functionality with visual feedback and navigation
- * 
+ *
  * @module wizard
  */
 
 const inquirer = require('inquirer');
+const path = require('path');
+const fse = require('fs-extra');
 const { buildQuestionSequence } = require('./questions');
 const {
   showWelcome,
@@ -131,6 +133,67 @@ async function runWizard() {
     } catch (error) {
       console.error('\n⚠️  AIOS core installation failed:', error.message);
       answers.aiosCoreInstalled = false;
+    }
+
+    // Install Expansion Packs if selected
+    if (answers.selectedExpansionPacks && answers.selectedExpansionPacks.length > 0) {
+      console.log('\n🎁 Installing Expansion Packs...');
+
+      // Detect source expansion-packs directory (npm package location)
+      const possibleSourceDirs = [
+        path.join(__dirname, '..', '..', 'expansion-packs'),
+        path.join(__dirname, '..', '..', '..', 'expansion-packs'),
+        path.join(process.cwd(), 'node_modules', 'aios-fullstack', 'expansion-packs')
+      ];
+
+      let sourceExpansionDir = null;
+      for (const dir of possibleSourceDirs) {
+        if (fse.existsSync(dir)) {
+          sourceExpansionDir = dir;
+          break;
+        }
+      }
+
+      if (sourceExpansionDir) {
+        const targetExpansionDir = path.join(process.cwd(), 'expansion-packs');
+        await fse.ensureDir(targetExpansionDir);
+
+        const installedPacks = [];
+        const failedPacks = [];
+
+        for (const pack of answers.selectedExpansionPacks) {
+          const sourcePack = path.join(sourceExpansionDir, pack);
+          const targetPack = path.join(targetExpansionDir, pack);
+
+          try {
+            if (fse.existsSync(sourcePack)) {
+              await fse.copy(sourcePack, targetPack);
+              installedPacks.push(pack);
+              console.log(`   ✅ ${pack}`);
+            } else {
+              failedPacks.push({ pack, reason: 'not found' });
+              console.log(`   ⚠️  ${pack} - not found in source`);
+            }
+          } catch (packError) {
+            failedPacks.push({ pack, reason: packError.message });
+            console.log(`   ⚠️  ${pack} - ${packError.message}`);
+          }
+        }
+
+        answers.expansionPacksInstalled = installedPacks.length > 0;
+        answers.expansionPacksResult = {
+          installed: installedPacks,
+          failed: failedPacks,
+          targetDir: targetExpansionDir
+        };
+
+        if (installedPacks.length > 0) {
+          console.log(`\n✅ Expansion Packs installed (${installedPacks.length}/${answers.selectedExpansionPacks.length})`);
+        }
+      } else {
+        console.log('   ⚠️  Expansion packs source directory not found');
+        answers.expansionPacksInstalled = false;
+      }
     }
 
     // Story 1.4: Generate IDE configs if IDEs were selected
