@@ -176,14 +176,16 @@ function generateTemplateVariables(wizardState) {
 }
 
 /**
- * Copy agent files from .aios-core/agents to IDE-specific agent folder
+ * Copy agent files from .aios-core/development/agents to IDE-specific agent folder
+ * v2.1 modular structure: agents are now in development/ module
  * @param {string} projectRoot - Project root directory
  * @param {string} agentFolder - Target folder for agent files (IDE-specific)
  * @param {Object} ideConfig - IDE configuration object (optional, for special handling)
  * @returns {Promise<string[]>} List of copied files
  */
 async function copyAgentFiles(projectRoot, agentFolder, ideConfig = null) {
-  const sourceDir = path.join(__dirname, '..', '..', '.aios-core', 'agents');
+  // v2.1: Agents are in development/agents/ (not root agents/)
+  const sourceDir = path.join(__dirname, '..', '..', '.aios-core', 'development', 'agents');
   const targetDir = path.join(projectRoot, agentFolder);
   const copiedFiles = [];
 
