@@ -69,7 +69,7 @@
 | 1732891500001 | 🔧 Technical Debt | ~~Core Module Security Hardening~~ | ✅ Done | [4.1 Task 2](v2.1/sprint-4/story-4.1-technical-debt-cleanup.md) | 4 hours | `security`, `core`, `coderabbit` | @qa |
 | 1732891500002 | 🔧 Technical Debt | ~~Core Module Code Quality Fixes~~ | ✅ Done | [4.1 Task 3](v2.1/sprint-4/story-4.1-technical-debt-cleanup.md) | 2 hours | `quality`, `core`, `coderabbit` | @qa |
 | 1732978800001 | 🔧 Technical Debt | ~~Fix Pre-existing Test Suite Failures~~ | ✅ Done | [4.1 Task 4](v2.1/sprint-4/story-4.1-technical-debt-cleanup.md) | 30 min | `testing`, `technical-debt` | @github-devops |
-| 1733427600001 | 🔧 Technical Debt | Fix Flaky CI Tests (migration-backup, environment-configuration) | 🟡 Medium | - | 2-4 hours | `testing`, `ci`, `flaky-tests`, `infrastructure` | @github-devops |
+| 1733427600001 | 🔧 Technical Debt | Fix Flaky CI Tests (migration-backup, environment-configuration) | 🟠 High | - | 2-4 hours | `testing`, `ci`, `flaky-tests`, `infrastructure` | @github-devops | **Sprint 4** |
 
 ### 🆕 Flaky CI Tests (ID: 1733427600001)
 
