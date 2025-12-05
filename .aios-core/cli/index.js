@@ -19,6 +19,7 @@ const { createManifestCommand } = require('./commands/manifest');
 const { createQaCommand } = require('./commands/qa');
 const { createMcpCommand } = require('./commands/mcp');
 const { createMigrateCommand } = require('./commands/migrate');
+const { createGenerateCommand } = require('./commands/generate');
 
 // Read package.json for version
 const packageJsonPath = path.join(__dirname, '..', '..', 'package.json');
@@ -48,6 +49,7 @@ Commands:
   qa                Quality Gate Manager (run, status)
   mcp               Manage global MCP configuration
   migrate           Migrate from v2.0 to v2.1 structure
+  generate          Generate documents from templates (prd, adr, pmdr, etc.)
   install           Install AIOS in current project
   init <name>       Create new AIOS project
   info              Show system information
@@ -68,6 +70,9 @@ Examples:
   $ aios mcp status
   $ aios migrate --dry-run
   $ aios migrate --from=2.0 --to=2.1
+  $ aios generate pmdr --title "Feature X Decision"
+  $ aios generate adr --save
+  $ aios generate list
   $ aios install
   $ aios doctor
 `);
@@ -86,6 +91,9 @@ Examples:
 
   // Add migrate command (Story 2.14)
   program.addCommand(createMigrateCommand());
+
+  // Add generate command (Story 3.9)
+  program.addCommand(createGenerateCommand());
 
   return program;
 }

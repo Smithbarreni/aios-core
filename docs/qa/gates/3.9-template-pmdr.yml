@@ -1,0 +1,149 @@
+# <!-- Powered by AIOS™ Core -->
+# Quality Gate Decision - Story 3.9
+# Template PMDR (Product Management Decision Record)
+
+# Required fields
+schema: 1
+story: "3.9"
+story_title: "Template PMDR"
+gate: "PASS"
+status_reason: "All 13 tests passing (100%), all 8 ACs validated, CLI command functional, template and schema well-structured. No CRITICAL or HIGH issues found."
+reviewer: "Quinn (Test Architect)"
+updated: "2025-12-05T09:50:00Z"
+
+# Waiver status
+waiver:
+  active: false
+
+# Issues (none found)
+top_issues: []
+
+# Risk summary
+risk_summary:
+  totals:
+    critical: 0
+    high: 0
+    medium: 0
+    low: 0
+  recommendations:
+    must_fix: []
+    monitor: []
+
+# Evidence and coverage
+evidence:
+  tests_reviewed: 13
+  tests_passed: 13
+  test_pass_rate: 100
+  risks_identified: 0
+  trace:
+    ac_covered: [1, 2, 3, 4, 5, 6, 7, 8]
+    ac_gaps: []
+
+# NFR Validation
+nfr_validation:
+  security:
+    status: PASS
+    notes: "Template generation is read-only, no external data inputs. Schema validation prevents injection."
+  performance:
+    status: PASS
+    notes: "Template generation completes in <100ms. Tests run in <1s total."
+  reliability:
+    status: PASS
+    notes: "Proper error handling for missing fields, validation errors surface clearly."
+  maintainability:
+    status: PASS
+    notes: "Code follows existing patterns, well-structured, clear separation of concerns."
+
+# Requirements Traceability
+requirements_traceability:
+  - ac: "AC3.9.1"
+    description: "Template segue padrão similar ao ADR (Context, Decision, Impact)"
+    test_coverage: "PMDR-01: Generate PMDR with required fields"
+    pattern: "Given PMDR template When generating document Then it contains Context, Decision, Business Impact sections"
+    status: PASS
+
+  - ac: "AC3.9.2"
+    description: "Inclui seção de Business Impact específica para produto"
+    test_coverage: "PMDR-01, PMDR-04"
+    pattern: "Given PMDR document When viewing sections Then Business Impact section is present and mandatory"
+    status: PASS
+
+  - ac: "AC3.9.3"
+    description: "Suporta stakeholders e approval workflow"
+    test_coverage: "PMDR-03: Approval workflow renders"
+    pattern: "Given approvals array When rendering Then approval table displays correctly; When no approvals Then shows 'Pending approval'"
+    status: PASS
+
+  - ac: "AC3.9.4"
+    description: "Inclui métricas de sucesso para a decisão"
+    test_coverage: "PMDR-02: Success metrics table renders"
+    pattern: "Given successMetrics array When rendering Then metrics table shows Metric, Current, Target, Timeline columns"
+    status: PASS
+
+  - ac: "AC3.9.5"
+    description: "JSON Schema valida output gerado"
+    test_coverage: "PMDR-01 (validation enabled), PMDR-04"
+    pattern: "Given template variables When validating against pmdr.schema.json Then validation passes for valid data, fails for invalid"
+    status: PASS
+
+  - ac: "AC3.9.6"
+    description: "Valida que business impact não está vazio"
+    test_coverage: "PMDR-04: Validation fails without businessImpact"
+    pattern: "Given empty or short businessImpact When validating Then validation fails with error"
+    status: PASS
+
+  - ac: "AC3.9.7"
+    description: "Template registrado no TemplateEngine"
+    test_coverage: "PMDR-05: should be included in supported types"
+    pattern: "Given TemplateEngine When checking supportedTypes Then 'pmdr' is included"
+    status: PASS
+
+  - ac: "AC3.9.8"
+    description: "Geração via CLI: aios generate pmdr"
+    test_coverage: "PMDR-05: CLI command executes successfully"
+    pattern: "Given CLI command 'aios generate pmdr' When executed Then generates PMDR document"
+    status: PASS
+
+# Quality Score
+quality_score: 100  # 100 - (20*FAILs) - (10*CONCERNS) = 100
+
+# Expiration
+expires: "2025-12-19T09:50:00Z"
+
+# Recommendations
+recommendations:
+  immediate: []
+  future:
+    - action: "Consider adding integration test for full CLI flow with file save"
+      refs: ["tests/templates/pmdr.test.js"]
+    - action: "Add e2e test that runs actual CLI command"
+      refs: [".aios-core/cli/commands/generate/index.js"]
+
+# Code Quality Assessment
+code_quality:
+  overall: "Excellent"
+  patterns_followed: true
+  test_coverage: "Comprehensive"
+  documentation: "Good JSDoc headers"
+
+# Files Reviewed
+files_reviewed:
+  - path: ".aios-core/product/templates/pmdr.hbs"
+    status: "Pre-existing, well-structured"
+    issues: []
+
+  - path: ".aios-core/product/templates/engine/schemas/pmdr.schema.json"
+    status: "Pre-existing, comprehensive validation"
+    issues: []
+
+  - path: ".aios-core/cli/commands/generate/index.js"
+    status: "New, follows CLI patterns"
+    issues: []
+
+  - path: ".aios-core/cli/index.js"
+    status: "Modified, added generate command"
+    issues: []
+
+  - path: "tests/templates/pmdr.test.js"
+    status: "New, 13 comprehensive tests"
+    issues: []

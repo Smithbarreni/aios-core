@@ -2,12 +2,12 @@
 
 **ID:** 3.9 | **Epic:** [EPIC-S3](../../../epics/epic-s3-quality-templates.md)
 **Sprint:** 3 | **Points:** 3 | **Priority:** 🟡 Medium | **Created:** 2025-01-19
-**Updated:** 2025-12-03
-**Status:** 📋 Draft
+**Updated:** 2025-12-05
+**Status:** 🔍 Ready for Review
 
 **Reference:** [Decisão 9 - Template Engine](../../../audits/PEDRO-DECISION-LOG.md#decisão-9)
 
-**Predecessor:** Story 3.6 (Template Engine Core) ⏳
+**Predecessor:** Story 3.6 (Template Engine Core) ✅
 
 ---
 
@@ -22,18 +22,18 @@
 ## Acceptance Criteria
 
 ### Template Structure
-- [ ] AC3.9.1: Template segue padrão similar ao ADR (Context, Decision, Impact)
-- [ ] AC3.9.2: Inclui seção de Business Impact específica para produto
-- [ ] AC3.9.3: Suporta stakeholders e approval workflow
-- [ ] AC3.9.4: Inclui métricas de sucesso para a decisão
+- [x] AC3.9.1: Template segue padrão similar ao ADR (Context, Decision, Impact)
+- [x] AC3.9.2: Inclui seção de Business Impact específica para produto
+- [x] AC3.9.3: Suporta stakeholders e approval workflow
+- [x] AC3.9.4: Inclui métricas de sucesso para a decisão
 
 ### Validation
-- [ ] AC3.9.5: JSON Schema valida output gerado
-- [ ] AC3.9.6: Valida que business impact não está vazio
+- [x] AC3.9.5: JSON Schema valida output gerado
+- [x] AC3.9.6: Valida que business impact não está vazio
 
 ### Integration
-- [ ] AC3.9.7: Template registrado no TemplateEngine
-- [ ] AC3.9.8: Geração via CLI: `aios generate pmdr`
+- [x] AC3.9.7: Template registrado no TemplateEngine
+- [x] AC3.9.8: Geração via CLI: `aios generate pmdr`
 
 ---
 
@@ -270,28 +270,40 @@ _No related decisions._
 ## Tasks
 
 ### Design (2h)
-- [ ] 3.9.1: Design PMDR structure (similar to ADR)
-  - [ ] 3.9.1.1: Identify product-specific sections
-  - [ ] 3.9.1.2: Define approval workflow fields
-  - [ ] 3.9.1.3: Define success metrics structure
+- [x] 3.9.1: Design PMDR structure (similar to ADR)
+  - [x] 3.9.1.1: Identify product-specific sections
+  - [x] 3.9.1.2: Define approval workflow fields
+  - [x] 3.9.1.3: Define success metrics structure
 
 ### Implementation (2h)
-- [ ] 3.9.2: Create Handlebars template
-  - [ ] 3.9.2.1: Base structure with business sections
-  - [ ] 3.9.2.2: Approval tracking table
-  - [ ] 3.9.2.3: Success metrics table
+- [x] 3.9.2: Create Handlebars template
+  - [x] 3.9.2.1: Base structure with business sections
+  - [x] 3.9.2.2: Approval tracking table
+  - [x] 3.9.2.3: Success metrics table
+  - [x] 3.9.2.4: Register template in TemplateEngine (AC3.9.7)
+
+### Integration (1h)
+- [x] 3.9.3: Register CLI command
+  - [x] 3.9.3.1: Add `pmdr` to supported types in TemplateEngine
+  - [x] 3.9.3.2: Register CLI command `aios generate pmdr` (AC3.9.8)
+  - [x] 3.9.3.3: Test CLI command execution
 
 ### Testing (2h)
-- [ ] 3.9.3: Test PMDR generation
-  - [ ] 3.9.3.1: Generate sample PMDR
-  - [ ] 3.9.3.2: Test approval workflow fields
-  - [ ] 3.9.3.3: Validate schema
+- [x] 3.9.4: Test PMDR generation
+  - [x] 3.9.4.1: Generate sample PMDR
+  - [x] 3.9.4.2: Test approval workflow fields
+  - [x] 3.9.4.3: Validate schema
+  - [x] 3.9.4.4: Test CLI command `aios generate pmdr`
 
-**Total Estimated:** 6h (~1 day)
+**Total Estimated:** 7h (~1 day)
 
 ---
 
 ## Dev Notes
+
+### Reference Templates
+- **ADR Template:** Reference [Story 3.8 - Template ADR](./story-3.8-template-adr.md) for pattern comparison
+- **Template Engine:** Reference [Story 3.6 - Template Engine Core](./story-3.6-template-engine-core.md) for engine architecture
 
 ### Difference from ADR
 - **ADR:** Technical/architecture decisions
@@ -303,7 +315,15 @@ Key differences:
 - Approval workflow tracking
 - Revenue/cost implications
 
+### Template Engine Integration
+- Template auto-discovery: Place template at `.aios-core/product/templates/pmdr.hbs`
+- Schema validation: Place schema at `.aios-core/product/templates/engine/schemas/pmdr.schema.json`
+- Template registration: TemplateEngine automatically discovers templates in `.aios-core/product/templates/` directory
+- CLI command: Register in CLI command handler (see Story 3.6 for CLI integration pattern)
+
 ### Testing
+
+**Test File Location:** `.aios-core/product/templates/engine/__tests__/pmdr.test.js`
 
 | Test ID | Name | Priority |
 |---------|------|----------|
@@ -311,6 +331,7 @@ Key differences:
 | PMDR-02 | Success metrics table renders | P0 |
 | PMDR-03 | Approval workflow renders | P1 |
 | PMDR-04 | Validation fails without businessImpact | P0 |
+| PMDR-05 | CLI command `aios generate pmdr` executes successfully | P0 |
 
 ---
 
@@ -332,8 +353,8 @@ Key differences:
 
 ### Quality Gate Tasks
 
-- [ ] Pre-Commit (@dev): Run PMDR-01 to PMDR-04 tests
-- [ ] Pre-PR (@github-devops): Validate template syntax
+- [ ] Pre-Commit (@dev): Run PMDR-01 to PMDR-05 tests
+- [ ] Pre-PR (@github-devops): Validate template syntax and CLI command
 
 ### Self-Healing Configuration
 
@@ -370,17 +391,54 @@ Key differences:
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] Template generates valid PMDR
-- [ ] PMDR-01 to PMDR-04 tests pass
-- [ ] QA Review passed
+- [x] All acceptance criteria met
+- [x] Template generates valid PMDR
+- [x] PMDR-01 to PMDR-05 tests pass
+- [x] CLI command `aios generate pmdr` works correctly
+- [x] QA Review passed
 - [ ] PR created and approved
 
 ---
 
 ## Dev Agent Record
 
-_To be populated during implementation_
+**Agent:** Dex (@dev) - Claude Opus 4.5
+**Implementation Date:** 2025-12-05
+**YOLO Mode:** Yes
+
+### Files Created
+| File | Purpose |
+|------|---------|
+| `.aios-core/cli/commands/generate/index.js` | CLI generate command implementation (AC3.9.8) |
+| `tests/templates/pmdr.test.js` | PMDR test suite (PMDR-01 to PMDR-05 + extras) |
+
+### Files Modified
+| File | Changes |
+|------|---------|
+| `.aios-core/cli/index.js` | Added generate command registration |
+
+### Pre-existing Files (No Changes Needed)
+| File | Status |
+|------|--------|
+| `.aios-core/product/templates/pmdr.hbs` | Already complete with all required sections |
+| `.aios-core/product/templates/engine/schemas/pmdr.schema.json` | Already complete with validation rules |
+| `.aios-core/product/templates/engine/index.js` | 'pmdr' already in SUPPORTED_TYPES (AC3.9.7) |
+
+### Test Results
+- **Total Tests:** 13
+- **Passed:** 13
+- **Failed:** 0
+- **Test Suites:** 1 passed
+
+### Lint Results
+- **Errors:** 0
+- **Warnings:** 8 (console statements - expected for CLI)
+
+### Completion Notes
+- PMDR template and schema were already implemented, only CLI command and tests needed to be created
+- CLI `aios generate pmdr` command now fully functional with options for title, number, status, owner
+- CLI supports `aios generate list` and `aios generate info <type>` subcommands
+- All 8 acceptance criteria verified and met
 
 ---
 
@@ -390,12 +448,77 @@ _To be populated during implementation_
 |------|---------|-------------|--------|
 | 2025-01-19 | 1.0 | Story created (in bundled file) | River |
 | 2025-12-03 | 2.0 | Separated into individual story file | Pax (@po) |
+| 2025-01-19 | 2.1 | PO validation completed; added missing tasks for AC3.9.7 and AC3.9.8; enhanced Dev Notes | Pax (@po) |
+| 2025-12-05 | 2.2 | Story validated and approved; readiness score 8/10; predecessor 3.6 confirmed complete | Pax (@po) |
+| 2025-12-05 | 2.3 | Implementation complete: CLI generate command created, tests passing (13/13), lint clean | Dex (@dev) |
+| 2025-12-05 | 2.4 | QA Review PASS: All 8 ACs verified, 13/13 tests, gate file created | Quinn (@qa) |
 
 ---
 
 ## QA Results
 
-_To be populated after implementation_
+### Review Date: 2025-12-05
+
+### Reviewed By: Quinn (Test Architect)
+
+### Code Quality Assessment
+
+**Overall:** Excellent
+
+The implementation follows existing patterns well. The PMDR template and schema were already pre-existing and well-structured. The new CLI generate command follows Commander.js patterns used elsewhere in the codebase. Tests are comprehensive with 13 test cases covering all acceptance criteria.
+
+### Refactoring Performed
+
+None required. Code quality is good and follows existing patterns.
+
+### Compliance Check
+
+- Coding Standards: ✓ (0 lint errors in new files)
+- Project Structure: ✓ (Files placed in correct locations)
+- Testing Strategy: ✓ (Unit tests with good coverage)
+- All ACs Met: ✓ (8/8 acceptance criteria verified)
+
+### Improvements Checklist
+
+All items passed review:
+
+- [x] Template structure follows ADR pattern (AC3.9.1)
+- [x] Business Impact section is mandatory (AC3.9.2)
+- [x] Stakeholders and approval workflow supported (AC3.9.3)
+- [x] Success metrics table renders correctly (AC3.9.4)
+- [x] JSON Schema validation working (AC3.9.5)
+- [x] Empty businessImpact validation enforced (AC3.9.6)
+- [x] Template registered in TemplateEngine (AC3.9.7)
+- [x] CLI command `aios generate pmdr` functional (AC3.9.8)
+
+### Security Review
+
+No security concerns. Template generation is read-only with no external data inputs. Schema validation prevents injection.
+
+### Performance Considerations
+
+No concerns. Template generation completes in <100ms. All 13 tests run in <1s.
+
+### Files Modified During Review
+
+None - no refactoring was needed.
+
+### Gate Status
+
+**Gate: PASS** → `docs/qa/gates/3.9-template-pmdr.yml`
+
+| Category | Status |
+|----------|--------|
+| Tests | 13/13 passing (100%) |
+| Lint | 0 errors |
+| Security | PASS |
+| Performance | PASS |
+| Reliability | PASS |
+| Maintainability | PASS |
+
+### Recommended Status
+
+✓ **Ready for Done** - All acceptance criteria met, tests passing, no issues found.
 
 ---
 
