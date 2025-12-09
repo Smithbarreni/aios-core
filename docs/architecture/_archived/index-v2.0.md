@@ -1,6 +1,17 @@
-# architecture.md
+# architecture.md (ARCHIVED)
 
-## Table of Contents
+> **⚠️ ARCHIVED - v2.0.0**
+>
+> This document has been superseded by [ARCHITECTURE-INDEX.md](../ARCHITECTURE-INDEX.md).
+>
+> **Date Archived:** 2025-12-09
+> **Reason:** Replaced by comprehensive ARCHITECTURE-INDEX.md for v2.1
+>
+> This file is retained for historical reference only.
+
+---
+
+## Table of Contents (OUTDATED)
 
 - [architecture.md](#table-of-contents)
   - [Introdução](./introduction.md)

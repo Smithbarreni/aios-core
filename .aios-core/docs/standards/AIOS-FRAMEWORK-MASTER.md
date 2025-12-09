@@ -1,8 +1,25 @@
 # AIOS Framework - Complete Documentation
 
-**Version:** 2.0.0  
-**Status:** Official Framework Standard  
-**Last Updated:** 2025-01-18  
+> **⚠️ DEPRECATION NOTICE**
+>
+> This document describes **v2.0.0** of the AIOS Framework.
+>
+> **For the current version (v2.1), see:**
+> - [AIOS-LIVRO-DE-OURO-V2.1-COMPLETE.md](./AIOS-LIVRO-DE-OURO-V2.1-COMPLETE.md) - Complete v2.1 framework guide
+> - [STANDARDS-INDEX.md](./STANDARDS-INDEX.md) - Navigation for all standards
+>
+> **Key changes in v2.1:**
+> - 4-module architecture (core, development, product, infrastructure)
+> - Squad System (replaces "Expansion Packs")
+> - Multi-repo strategy (3 public + 2 private repos)
+> - Quality Gates 3-layer system
+> - Story Template v2.0
+>
+> This document is retained for historical reference only.
+
+**Version:** 2.0.0 (DEPRECATED - See v2.1)
+**Status:** ⚠️ Deprecated - Reference Only
+**Last Updated:** 2025-01-18
 **Maintained By:** AIOS Framework Team
 
 ---

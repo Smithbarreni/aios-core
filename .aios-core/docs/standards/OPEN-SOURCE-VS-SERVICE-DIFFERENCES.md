@@ -1,18 +1,80 @@
 # Open-Source vs Service Implementation Differences
 
-**Version:** 1.0
-**Date:** 2025-01-14
+**Version:** 2.1.0
+**Date:** 2025-12-09
 **Purpose:** Document differences between AIOS open-source and AIOS service implementations
+**Status:** ⚠️ Needs Review - Updated for v2.1 Multi-Repo Strategy
 
 ---
 
 ## Overview
 
 AIOS has two deployment contexts:
-1. **Open-Source** - Public repository, community-driven, self-hosted
-2. **Service** - Commercial offering (e.g., Instagram Content Creator workflow)
+1. **Open-Source** - Public repositories, community-driven, self-hosted
+2. **Service** - Commercial offering (e.g., MMOS Mind emulations, certified partner integrations)
 
 This document clarifies which features apply to which context.
+
+---
+
+## Multi-Repo Strategy (v2.1)
+
+### Repository Organization
+
+| Repository | License | Type | Contains |
+|------------|---------|------|----------|
+| `allfluence/aios-core` | Commons Clause | Public | Core framework, 11 agents, Quality Gates |
+| `allfluence/aios-squads` | MIT | Public | ETL, Creator, MMOS-Mapper squads |
+| `allfluence/mcp-ecosystem` | Apache 2.0 | Public | Docker MCP, IDE configs, MCP presets |
+| `allfluence/mmos` | Proprietary + NDA | Private | MMOS Minds, DNA Mental |
+| `allfluence/certified-partners` | Proprietary | Private | Premium squads, partner portal |
+
+### npm Package Scoping
+
+| Package | Registry | Availability |
+|---------|----------|--------------|
+| `@aios/core` | npm public | Open-source |
+| `@aios/squad-etl` | npm public | Open-source |
+| `@aios/squad-creator` | npm public | Open-source |
+| `@aios/squad-mmos` | npm public | Open-source |
+| `@aios/mcp-presets` | npm public | Open-source |
+
+### Open-Source vs Service by Repository
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    OPEN-SOURCE (Public Repos)                           │
+│                                                                         │
+│   allfluence/aios-core        allfluence/aios-squads                   │
+│   ┌─────────────────────┐     ┌─────────────────────┐                  │
+│   │ • Core Framework    │     │ • ETL Squad         │                  │
+│   │ • 11 Base Agents    │     │ • Creator Squad     │                  │
+│   │ • Quality Gates     │     │ • MMOS-Mapper Squad │                  │
+│   │ • Standards Docs    │     │ • squad.yaml format │                  │
+│   └─────────────────────┘     └─────────────────────┘                  │
+│                                                                         │
+│   allfluence/mcp-ecosystem                                             │
+│   ┌─────────────────────┐                                              │
+│   │ • Docker MCP        │                                              │
+│   │ • IDE Configurations│                                              │
+│   │ • MCP Presets       │                                              │
+│   └─────────────────────┘                                              │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    SERVICE (Private Repos)                              │
+│                                                                         │
+│   allfluence/mmos             allfluence/certified-partners            │
+│   ┌─────────────────────┐     ┌─────────────────────┐                  │
+│   │ • MMOS Minds        │     │ • Premium Squads    │                  │
+│   │ • DNA Mental™       │     │ • Partner Portal    │                  │
+│   │ • Mind Clones       │     │ • Custom Agents     │                  │
+│   │ • NDA Required      │     │ • Enterprise Tools  │                  │
+│   └─────────────────────┘     └─────────────────────┘                  │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -25,11 +87,11 @@ This document clarifies which features apply to which context.
 | **Agente** | ✅ Yes | ✅ Yes | AI-powered agent execution |
 | **Worker** | ❌ No | ✅ Yes | Script-based execution (service infrastructure) |
 | **Humano** | ❌ No | ✅ Yes | Manual human review (service team) |
-| **Clone** | ⚠️ MMOS only | ✅ Yes | Mind emulation (MMOS expansion pack or service) |
+| **Clone** | ⚠️ MMOS Squad only | ✅ Yes | Mind emulation (MMOS Squad or service) |
 
 **Open-Source Rule:**
 - Always use `responsavel_type: Agente`
-- Exception: MMOS expansion pack may use `Clone` for mind emulations
+- Exception: MMOS Squad may use `Clone` for mind emulations
 - Never use `Worker` or `Humano` in open-source tasks
 
 **Service Rule:**
@@ -73,16 +135,16 @@ This document clarifies which features apply to which context.
 **Service:**
 ```yaml
 **Template:**
-- path: expansion-packs/instagram-content-creator/tasks/analyze-brief.md
+- path: squads/instagram-content-creator/tasks/analyze-brief.md
   type: prompt
   version: 2.1.0
   variables: [brief_text, brand_id, campaign_goal]
-  schema: expansion-packs/.../schemas/analyze-brief-output.json
+  schema: squads/.../schemas/analyze-brief-output.json
 ```
 
 **Difference:**
 - Open-source uses templates from `.aios-core/templates/`
-- Service uses expansion pack-specific templates with JSON Schema validation
+- Service uses Squad-specific templates with JSON Schema validation
 
 ---
 
@@ -346,7 +408,7 @@ function validateTask(task) {
   const required = ['task', 'responsável', 'responsavel_type', 'Entrada', 'Saída'];
 
   // Open-source specific: responsavel_type must be "Agente" (except MMOS)
-  if (task.responsavel_type !== 'Agente' && !task.isMmosExpansionPack) {
+  if (task.responsavel_type !== 'Agente' && !task.isMmosSquad) {
     console.warn(`Open-source tasks should use responsavel_type: Agente. Found: ${task.responsavel_type}`);
   }
 
@@ -391,7 +453,7 @@ function validateTask(task) {
 - [ ] Change `responsavel_type: Humano` → `responsavel_type: Agente`
 - [ ] Change `responsavel_type: Clone` → `responsavel_type: Agente` (unless MMOS)
 - [ ] Make `atomic_layer` optional (or remove if not useful)
-- [ ] Update template paths (expansion-packs → .aios-core/templates)
+- [ ] Update template paths (squads/ → .aios-core/templates)
 - [ ] Remove service-specific fields (service_id, customer_id, billing_code)
 - [ ] Update error handling fallbacks (remove service APIs)
 - [ ] Update tools (remove proprietary/internal tools)
@@ -401,7 +463,7 @@ function validateTask(task) {
 
 - [ ] Keep `responsavel_type: Agente` OR change based on EXECUTOR-DECISION-TREE.md
 - [ ] Make `atomic_layer` required for design tasks
-- [ ] Update template paths to expansion pack templates
+- [ ] Update template paths to Squad templates
 - [ ] Add service-specific fields (service_id, etc.)
 - [ ] Update error handling with service fallbacks
 - [ ] Add service tools/APIs
@@ -415,7 +477,7 @@ function validateTask(task) {
 |---------|-------------|---------|
 | **responsavel_type** | Agente only | Agente/Worker/Humano/Clone |
 | **atomic_layer** | Optional | Required for design |
-| **Templates** | .aios-core/templates/ | expansion-packs/{pack}/ |
+| **Templates** | .aios-core/templates/ | squads/{squad}/ |
 | **Tools** | MCPs, open-source CLIs | + Proprietary APIs |
 | **Scripts** | Agent-specific only | + Service orchestration |
 | **Error Fallbacks** | Local/user-driven | + Service APIs |
@@ -427,13 +489,23 @@ function validateTask(task) {
 
 ## Related Documents
 
-- `.aios-core/docs/standards/TASK-FORMAT-SPECIFICATION-V1.md` - Complete task format spec
-- `.aios-core/docs/standards/AGENT-PERSONALIZATION-STANDARD-V1.md` - Personality guidelines
-- `docs/WORKFLOW-COMPLETE-CONSOLIDATED-V3.md` - Service workflow example
-- `.aios-core/templates/personalized-task-template-v2.md` - Open-source task template
+- [AIOS-LIVRO-DE-OURO-V2.1-COMPLETE.md](./AIOS-LIVRO-DE-OURO-V2.1-COMPLETE.md) - Complete v2.1 framework guide
+- [STANDARDS-INDEX.md](./STANDARDS-INDEX.md) - Standards navigation
+- [TASK-FORMAT-SPECIFICATION-V1.md](./TASK-FORMAT-SPECIFICATION-V1.md) - Complete task format spec
+- [AGENT-PERSONALIZATION-STANDARD-V1.md](./AGENT-PERSONALIZATION-STANDARD-V1.md) - Personality guidelines
+- [multi-repo-strategy.md](../../docs/architecture/multi-repo-strategy.md) - Multi-repo architecture details
 
 ---
 
-**Last Updated:** 2025-01-14
-**Version:** 1.0
-**Applies to:** AIOS v3.0+
+## Change Log
+
+| Date | Version | Changes | Author |
+|------|---------|---------|--------|
+| 2025-01-14 | 1.0.0 | Initial document | @architect |
+| 2025-12-09 | 2.1.0 | Added Multi-Repo Strategy section, updated terminology (Squad), updated related docs | @dev (Dex) |
+
+---
+
+**Last Updated:** 2025-12-09
+**Version:** 2.1.0
+**Applies to:** AIOS v2.1+
