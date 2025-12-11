@@ -1,6 +1,6 @@
 # Story Index
 
-**Updated:** 2025-12-09
+**Updated:** 2025-12-10
 **Structure:** Consolidated v2.1
 
 ---
@@ -39,9 +39,15 @@ docs/stories/
 | OSR-1 | ✅ Done | Infrastructure Audit |
 | OSR-2 | ✅ Done | Repository Investigation |
 | OSR-3 | ✅ Done | Legal Foundation |
-| OSR-4 | 🟡 Ready | GitHub Community Setup |
-| OSR-5 | ⏳ Pending | Community Handbook |
-| OSR-6-10 | ⏳ Pending | Sprint 6 |
+| OSR-4 | ✅ Done | GitHub Community Setup |
+| OSR-5 | ✅ Done | Community Handbook |
+| OSR-6 | ✅ Done | Feature Request Process |
+| OSR-7 | ✅ Done | Public Roadmap |
+| OSR-8 | 🟡 Ready | Expansion Pack Guide |
+| OSR-9 | ✅ Done | Rebranding (Synkra) |
+| OSR-10 | ⏳ Pending | Release Checklist |
+
+> **Public Roadmap:** [GitHub Project](https://github.com/orgs/SynkraAI/projects/1) | [ROADMAP.md](../../ROADMAP.md)
 
 ---
 
@@ -62,4 +68,4 @@ docs/stories/
 
 ---
 
-*Last major cleanup: 2025-12-09 by @po (Pax)*
+*Last major cleanup: 2025-12-10 by @po (Pax)*
