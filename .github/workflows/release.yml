@@ -14,6 +14,10 @@ on:
 env:
   NODE_VERSION: '20'
 
+permissions:
+  contents: write
+  actions: write
+
 jobs:
   create-release:
     runs-on: ubuntu-latest
