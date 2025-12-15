@@ -15,7 +15,7 @@
 - 🔧 **Technical Debt**: 5
 - ✨ **Enhancement**: 2
 - 🔴 **Critical**: 0
-- ✅ **Resolved**: 11 (Story 3.11c, Story 5.10, Story OSR-2, Story OSR-3, Story OSR-6, Story OSR-7, Story OSR-8, Story OSR-9, Story 6.9, Story 6.10, Story 6.11)
+- ✅ **Resolved**: 13 (Story 3.11c, Story 5.10, Story OSR-2, Story OSR-3, Story OSR-6, Story OSR-7, Story OSR-8, Story OSR-9, Story 6.9, Story 6.10, Story 6.11, Tech Debt 1734220200001)
 - ❌ **Obsolete**: 1 (removed from active backlog)
 
 ---
@@ -108,11 +108,10 @@
 
 ---
 
-## 🔧 Technical Debt (10 items)
+## 🔧 Technical Debt (9 items)
 
 | ID | Type | Title | Priority | Related Story | Effort | Tags | Created By |
 |----|------|-------|----------|---------------|--------|------|------------|
-| 1734220200001 | 🔧 Technical Debt | Framework Documentation Consolidation | 🟠 Medium | [Story 6.11](v2.1/sprint-6/story-6.11-framework-docs-consolidation.md) | 2-3 hours | `documentation`, `refactoring`, `framework`, `osr` | @qa |
 | 1733679600001 | 🔧 Technical Debt | GitHub Actions Cost Optimization | 🟡 Medium | - | 4-6 hours | `ci-cd`, `github-actions`, `cost-optimization`, `devops` | @devops |
 | 1733682000001 | 🔧 Technical Debt | Increase Test Coverage to 80% | 🟡 Medium | - | 8-12 hours | `testing`, `coverage`, `quality` | @dev |
 | 1763298742141 | 🔧 Technical Debt | ~~Add unit tests for decision-log-generator~~ | ✅ Done | [4.1 Task 1](v2.1/sprint-4/story-4.1-technical-debt-cleanup.md) | 2 hours | `testing`, `decision-logging` | @dev |
@@ -120,33 +119,6 @@
 | 1732891500002 | 🔧 Technical Debt | ~~Core Module Code Quality Fixes~~ | ✅ Done | [4.1 Task 3](v2.1/sprint-4/story-4.1-technical-debt-cleanup.md) | 2 hours | `quality`, `core`, `coderabbit` | @qa |
 | 1732978800001 | 🔧 Technical Debt | ~~Fix Pre-existing Test Suite Failures~~ | ✅ Done | [4.1 Task 4](v2.1/sprint-4/story-4.1-technical-debt-cleanup.md) | 30 min | `testing`, `technical-debt` | @github-devops |
 | 1733427600001 | 🔧 Technical Debt | ~~Fix Flaky CI Tests (migration-backup, environment-configuration)~~ | ✅ Done | [PR #27](https://github.com/Pedrovaleriolopez/aios-fullstack/pull/27) | 2-4 hours | `testing`, `ci`, `flaky-tests`, `infrastructure` | @github-devops | **Sprint 4** |
-
-### Framework Documentation Consolidation (ID: 1734220200001)
-
-**Created:** 2025-12-14 | **Priority:** 🟠 Medium | **Sprint:** 6 | **Story:** [6.11](v2.1/sprint-6/story-6.11-framework-docs-consolidation.md)
-
-**Problem:** Framework documentation (`source-tree.md`, `coding-standards.md`, `tech-stack.md`) exists in two locations with inconsistent references:
-- `docs/architecture/` - 39 arquivos misturados (docs oficiais + análises de projeto)
-- `docs/framework/` - 4 arquivos desatualizados (v1.0, ainda referencia `aios/aios-core`)
-
-**Inconsistencies Found:**
-- `core-config.yaml` aponta para `docs/architecture/`
-- `agent-config-requirements.yaml` aponta para `docs/framework/`
-
-**Solution:** Consolidar docs oficiais em `docs/framework/` e organizar `docs/architecture/` para conter apenas docs específicos do projeto.
-
-**Action Items:**
-- [ ] Sincronizar `docs/framework/` com versões atualizadas (v1.1)
-- [ ] Atualizar `core-config.yaml` para referenciar `docs/framework/`
-- [ ] Criar `docs/architecture/analysis/` para docs de análise
-- [ ] Marcar duplicatas em `docs/architecture/` como DEPRECATED
-- [ ] Validar que agent loaders funcionam corretamente
-
-**References:**
-- [Story 6.11](v2.1/sprint-6/story-6.11-framework-docs-consolidation.md)
-- Story 6.10 QA Review (identificou o problema)
-
----
 
 ### GitHub Actions Cost Optimization (ID: 1733679600001)
 
@@ -438,6 +410,8 @@
 
 | ID | Type | Title | Priority | Related Story | Resolved | PR |
 |----|------|-------|----------|---------------|----------|-----|
+| 1734220200001 | ✅ Resolved | Framework Documentation Consolidation | 🟠 Medium | [6.11](v2.1/sprint-6/story-6.11-framework-docs-consolidation.md) ✅ Done | 2025-12-14 | - |
+| 1734217500001 | ✅ Resolved | Documentation Cleanup for OSR | 🟠 Medium | [6.10](v2.1/sprint-6/story-6.10-documentation-cleanup-osr.md) ✅ Done | 2025-12-14 | - |
 | 1734214800001 | ✅ Resolved | Documentation Integrity System | 🔴 Critical | [6.9](v2.1/sprint-6/story-6.9-documentation-integrity-system.md) ✅ Done | 2025-12-14 | [PR #4](https://github.com/SynkraAI/aios-core/pull/4) |
 | 1734210000001 | ✅ Resolved | Rebranding Investigation (Synkra) | 🟡 Medium | [OSR-9](v2.1/sprint-6/story-osr-9-rebranding-synkra.md) ✅ Done | 2025-12-14 | - |
 | 1733880000001 | ✅ Resolved | Squads Guide Documentation | 🟠 High | [OSR-8](v2.1/sprint-6/story-osr-8-expansion-pack-guide.md) ✅ Done | 2025-12-10 | - |
@@ -447,6 +421,43 @@
 | 1733749000001 | ✅ Resolved | Repository Strategy Investigation | 🔴 Critical | [OSR-2](v2.1/sprint-5/story-osr-2-repo-investigation.md) ✅ Done | 2025-12-08 | - |
 | 1733664000001 | ✅ Resolved | GitHub DevOps Setup for User Projects | 🔴 Critical | [5.10](v2.1/sprint-5/story-5.10-github-devops-user-projects.md) ✅ Done | 2025-12-08 | [PR #29](https://github.com/Pedrovaleriolopez/aios-fullstack/pull/29) |
 | 1733673600001 | ✅ Resolved | Quality Metrics Live Integration | 🔴 Critical | [3.11c](v2.1/sprint-3/story-3.11c-metrics-live-integration.md) ✅ Done | 2025-12-08 | [PR #28](https://github.com/Pedrovaleriolopez/aios-fullstack/pull/28) |
+
+### ~~Framework Documentation Consolidation (ID: 1734220200001)~~ ✅ RESOLVED
+
+**Created:** 2025-12-14 | **Resolved:** 2025-12-14 | **Sprint:** 6
+
+**Problem:** Framework documentation (`source-tree.md`, `coding-standards.md`, `tech-stack.md`) existed in two locations with inconsistent references - `docs/architecture/` and `docs/framework/`.
+
+**Solution Implemented (Story 6.11):**
+- [x] Synced `docs/framework/` with current versions (v1.1)
+- [x] Updated `core-config.yaml` to reference `docs/framework/` as primary location
+- [x] Created `docs/architecture/analysis/` for analysis documents (10 files moved)
+- [x] Marked duplicates in `docs/architecture/` as DEPRECATED
+- [x] Added fallback paths for backward compatibility
+
+**Result:** `docs/framework/` is now the official location for portable framework documentation. Architecture folder organized with analysis subfolder.
+
+📄 **[Ver Story 6.11](v2.1/sprint-6/story-6.11-framework-docs-consolidation.md)**
+
+---
+
+### ~~Documentation Cleanup for OSR (ID: 1734217500001)~~ ✅ RESOLVED
+
+**Created:** 2025-12-14 | **Resolved:** 2025-12-14 | **Sprint:** 6
+
+**Problem:** Documentation needed cleanup before open-source release - legacy references, outdated information, and quality issues.
+
+**Solution Implemented (Story 6.10):**
+- [x] Removed legacy/deprecated documentation
+- [x] Updated outdated references and links
+- [x] Verified documentation consistency
+- [x] Prepared documentation for public release
+
+**Result:** Documentation cleaned and ready for open-source release.
+
+📄 **[Ver Story 6.10](v2.1/sprint-6/story-6.10-documentation-cleanup-osr.md)**
+
+---
 
 ### ~~Documentation Integrity System (ID: 1734214800001)~~ ✅ RESOLVED
 
@@ -695,4 +706,4 @@
 
 *Auto-generated by AIOS Backlog Manager (Story 6.1.2.6)*
 *Last Updated: 2025-12-14 by @dev (Dex)*
-*Update: Story 6.10 - Documentation Cleanup for OSR-10*
+*Update: Story 6.11 - Framework Documentation Consolidation complete, Tech Debt 1734220200001 resolved*

@@ -49,9 +49,11 @@ Criar e executar um checklist abrangente que valide todos os itens necessários 
 | [x] CODE_OF_CONDUCT.md presente | ✅ | @dev | Contributor Covenant |
 | [x] COMMUNITY.md criado | ✅ | @dev | OSR-5 - Verified |
 | [x] SECURITY.md com política | ✅ | @dev | **CREATED OSR-10** - Full policy |
-| [x] Architecture docs atualizados | ✅ | @dev | docs/architecture/ exists |
+| [x] Architecture docs atualizados | ✅ | @dev | docs/architecture/ (project-specific), docs/framework/ (official - Story 6.11) |
 | [x] API documentation existe | ✅ | @dev | In docs/guides/ |
 | [x] Getting Started guide funciona | ✅ | @dev | In README.md |
+
+> **Note (Story 6.11):** Framework documentation (`source-tree.md`, `coding-standards.md`, `tech-stack.md`) is now consolidated in `docs/framework/` as the official location. `docs/architecture/` contains project-specific analysis and decisions.
 
 ---
 
@@ -253,6 +255,11 @@ AND the project is ready for public release
 - ✅ OSR-8: Squads Guide (criado)
 - ✅ OSR-9: Rebranding (decisão tomada)
 
+**Related Documentation Stories (Sprint 6):**
+- ✅ Story 6.9: Documentation Integrity System (mode-aware templates)
+- ✅ Story 6.10: Documentation Cleanup for OSR (legacy removal)
+- ✅ Story 6.11: Framework Documentation Consolidation (`docs/framework/` as official location)
+
 **All dependencies complete!** Epic OSR-10 is ready for execution.
 
 **Blocks:**
@@ -286,6 +293,9 @@ AND the project is ready for public release
 | OSR-8 | `docs/guides/squads-guide.md`, `templates/squad/`, `docs/guides/squad-examples/` |
 | OSR-9 | Rebranding para SynkraAI completo |
 | **OSR-10** | `SECURITY.md`, `.env.example`, `.github/dependabot.yml`, `.gitattributes`, `eslint.config.js` |
+| **Story 6.9** | Mode detector, documentation templates, brownfield analyzer |
+| **Story 6.10** | Documentation cleanup, legacy removal |
+| **Story 6.11** | `docs/framework/` consolidation, `docs/architecture/analysis/`, DEPRECATED notices |
 
 ### Checklists Existentes
 - `.github/PULL_REQUEST_TEMPLATE.md` - PR checklist
@@ -344,7 +354,7 @@ Quando o release for bem-sucedido:
 
 **Criado por:** River (SM) 🌊
 **Data:** 2025-12-05
-**Atualizado:** 2025-12-10 (nomenclatura Squads, referências atualizadas)
+**Atualizado:** 2025-12-14 (Story 6.9/6.10/6.11 references, docs/framework/ consolidation note)
 **Executado:** 2025-12-11 por @dev (Dex) - YOLO Mode
 
 ---
