@@ -7,6 +7,7 @@ module.exports = {
     '**/tests/**/*.test.js',
     '**/tests/**/*.spec.js',
     '**/.aios-core/**/__tests__/**/*.test.js',
+    '**/pro/**/__tests__/**/*.test.js', // aios-pro tests (MIS-4)
   ],
 
   // Ignore patterns - exclude incompatible test frameworks

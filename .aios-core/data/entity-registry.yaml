@@ -1,7 +1,7 @@
 metadata:
   version: 1.0.0
-  lastUpdated: '2026-02-09T16:42:28.277Z'
-  entityCount: 476
+  lastUpdated: '2026-02-09T20:43:07.614Z'
+  entityCount: 474
   checksumAlgorithm: sha256
 entities:
   tasks:
@@ -6134,8 +6134,8 @@ entities:
         score: 0.4
         constraints: []
         extensionPoints: []
-      checksum: sha256:65f51fa81e5b9b237d8c7f071c86acc21b0fcfcc763a781e46c5dd39e8dec0ac
-      lastVerified: '2026-02-08T13:33:24.330Z'
+      checksum: sha256:364f38da78222318493dc8f2c6d2f81bc1ed88b95885e60097fc760ea29fe1ca
+      lastVerified: '2026-02-09T20:43:07.610Z'
     task-elicitation:
       path: .aios-core/core/elicitation/task-elicitation.js
       type: module
@@ -6253,7 +6253,6 @@ entities:
       usedBy:
         - autonomous-build-loop
         - build-orchestrator
-        - timeline-manager
       dependencies:
         - stuck-detector
         - recovery-tracker
@@ -6354,6 +6353,7 @@ entities:
         - engine
       usedBy:
         - gaps-implementation.verify
+        - active-modules.verify
       dependencies: []
       adaptability:
         score: 0.4
@@ -6617,42 +6617,6 @@ entities:
         extensionPoints: []
       checksum: sha256:7e21cb18f666429746e97d477db799b4401aab036421d6a5fb821354b4e26131
       lastVerified: '2026-02-08T13:33:24.337Z'
-    context-snapshot:
-      path: .aios-core/core/memory/context-snapshot.js
-      type: module
-      purpose: context.description || this._generateDescription(context),
-      keywords:
-        - context
-        - snapshot
-      usedBy:
-        - file-evolution-tracker
-        - timeline-manager
-      dependencies: []
-      adaptability:
-        score: 0.4
-        constraints: []
-        extensionPoints: []
-      checksum: sha256:b316068e6689d1ab405d44083dc59e816c2515745e24d2d39043d95a6fbc786a
-      lastVerified: '2026-02-08T13:33:24.338Z'
-    file-evolution-tracker:
-      path: .aios-core/core/memory/file-evolution-tracker.js
-      type: module
-      purpose: Entity at .aios-core\core\memory\file-evolution-tracker.js
-      keywords:
-        - file
-        - evolution
-        - tracker
-      usedBy:
-        - timeline-manager
-        - gaps-implementation.verify
-      dependencies:
-        - context-snapshot
-      adaptability:
-        score: 0.4
-        constraints: []
-        extensionPoints: []
-      checksum: sha256:8e381e40e5deeb524c7af2490c131c4556d300aefb0261de1358bcdecac839c7
-      lastVerified: '2026-02-08T13:33:24.338Z'
     gotchas-memory:
       path: .aios-core/core/memory/gotchas-memory.js
       type: module
@@ -6666,6 +6630,7 @@ entities:
         - subagent-dispatcher
         - ideation-engine
         - gaps-implementation.verify
+        - active-modules.verify
       dependencies: []
       adaptability:
         score: 0.4
@@ -6673,25 +6638,6 @@ entities:
         extensionPoints: []
       checksum: sha256:b0fe8524e98e992653b1e6cdf06a2b102ddb4d8729b6fecf0fe981bec5decdf4
       lastVerified: '2026-02-08T13:33:24.338Z'
-    timeline-manager:
-      path: .aios-core/core/memory/timeline-manager.js
-      type: module
-      purpose: 'raw.filePath ? `${raw.eventType}: ${raw.filePath}` : `${raw.eventType}`,'
-      keywords:
-        - timeline
-        - manager
-      usedBy:
-        - gaps-implementation.verify
-      dependencies:
-        - file-evolution-tracker
-        - context-snapshot
-        - build-state-manager
-      adaptability:
-        score: 0.4
-        constraints: []
-        extensionPoints: []
-      checksum: sha256:c95ed4b3fb17c36f42d80160287a9529aaab662442ca4707bb8fc2d51e9ac2aa
-      lastVerified: '2026-02-08T13:33:24.339Z'
     agent-invoker:
       path: .aios-core/core/orchestration/agent-invoker.js
       type: module
@@ -8316,6 +8262,24 @@ entities:
         extensionPoints: []
       checksum: sha256:8e1d03a482b820a6a23d5821fae9e23fcb13cb70c95daec388e2e03d3283861f
       lastVerified: '2026-02-09T16:42:28.275Z'
+    active-modules.verify:
+      path: .aios-core/core/memory/__tests__/active-modules.verify.js
+      type: module
+      purpose: Entity at .aios-core\core\memory\__tests__\active-modules.verify.js
+      keywords:
+        - active
+        - modules
+        - verify
+      usedBy: []
+      dependencies:
+        - gotchas-memory
+        - semantic-merge-engine
+      adaptability:
+        score: 0.4
+        constraints: []
+        extensionPoints: []
+      checksum: sha256:70f2689446adb1dc72faf2bd2c26c2d142814d4be30fee4f0e58b9163095a400
+      lastVerified: '2026-02-09T20:43:07.612Z'
   agents:
     aios-master:
       path: .aios-core/development/agents/aios-master.md

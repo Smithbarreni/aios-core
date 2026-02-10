@@ -14,7 +14,7 @@ This folder contains active and planned epics for the AIOS project.
 | **PRO** | [AIOS Pro Architecture](epic-pro-aios-pro-architecture/EPIC-PRO-INDEX.md) | Investigation | Sprint 9 |
 | **ACT** | [Activation Pipeline](epic-activation-pipeline/EPIC-ACT-INDEX.md) | Active | Sprint 12-16 |
 | **IDS** | [Incremental Development System](epic-ids-incremental-development/EPIC-IDS-INDEX.md) | Draft | Sprint 17+ |
-| **MIS** | [Memory Intelligence System](epic-memory-intelligence-system/EPIC-MIS-INDEX.md) | Draft | Sprint 18+ |
+| **MIS** | [Memory Intelligence System](epic-memory-intelligence-system/EPIC-MIS-INDEX.md) | In Progress (1/7) | Sprint 18+ |
 
 ## Epic Structure
 

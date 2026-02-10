@@ -1,10 +1,13 @@
 # Epic MIS: Memory Intelligence System
 
 **Epic ID:** EPIC-MIS
-**Status:** Draft
+**Status:** Implementation In Progress (4/7 stories done)
 **Created:** 2026-02-09
 **Author:** @architect (Aria)
-**Related Guide:** [Memory System Guide](../../../guides/MEMORY-SYSTEM.md)
+**Related Guides:**
+- [Memory System (Current State)](../../../guides/MEMORY-SYSTEM.md)
+- [Memory Intelligence System (Target State)](../../../guides/MEMORY-INTELLIGENCE-SYSTEM.md)
+**Architecture Model:** Open Core — inteligencia de memoria reside em `aios-pro`, `aios-core` fornece extension points
 
 ---
 
@@ -38,15 +41,15 @@ Implement a **Memory Intelligence System (MIS)** that:
 
 ## Stories
 
-| Story | Title | Priority | Complexity | Estimated |
-|-------|-------|----------|------------|-----------|
-| [MIS-1](story-mis-1-investigation.md) | Investigation & Architecture Design | Critical | High | 12h |
-| MIS-2 | Dead Code Cleanup & Path Repair | High | Low | 4h |
-| MIS-3 | Session Digest (PreCompact Hook) | Critical | High | 14h |
-| MIS-4 | Progressive Memory Retrieval | Critical | High | 16h |
-| MIS-5 | Self-Learning Engine | High | High | 14h |
-| MIS-6 | Pipeline Integration & Agent Memory API | High | Medium | 10h |
-| MIS-7 | CLAUDE.md & Rules Auto-Evolution | Medium | Medium | 8h |
+| Story | Title | Priority | Complexity | Repository | Estimated | Status |
+|-------|-------|----------|------------|------------|-----------|--------|
+| [MIS-1](story-mis-1-investigation.md) | Investigation & Architecture Design | Critical | High | aios-core (docs) | 12h | ✅ Done |
+| [MIS-2](story-mis-2-dead-code-cleanup.md) | Dead Code Cleanup & Path Repair | High | Low | **aios-core** | 4h | ✅ Done |
+| [MIS-3](story-mis-3-session-digest.md) | Session Digest (PreCompact Hook) | Critical | High | **aios-core** (hook runner) + **aios-pro** (digest) | 14h | ✅ Done |
+| [MIS-4](story-mis-4-progressive-memory-retrieval.md) | Progressive Memory Retrieval | Critical | High | **aios-pro** | 16h | ✅ Done |
+| MIS-5 | Self-Learning Engine | High | High | **aios-pro** | 14h | Pending |
+| [MIS-6](story-mis-6-pipeline-integration.md) | Pipeline Integration & Agent Memory API | High | Medium | **aios-core** (ext points) + **aios-pro** (loader) | 10h | Ready |
+| MIS-7 | CLAUDE.md & Rules Auto-Evolution | Medium | Medium | **aios-pro** | 8h | Pending |
 
 **Total Estimated:** ~78 hours
 
@@ -74,39 +77,40 @@ Implement a **Memory Intelligence System (MIS)** that:
 | Claude Code agent memory frontmatter | Available (Feb 2026) | MIS-6 scope control |
 | UnifiedActivationPipeline (ACT epic) | Done | MIS-6 integration point |
 | IDS Entity Registry | Done (IDS-1) | MIS-4 pattern matching |
+| **Epic PRO: aios-pro repository** | **Done (PRO-5)** | **MIS-3+ code location** |
+| **Epic PRO: pro-detector.js** | **Done (PRO-5)** | **Extension point pattern** |
+| **Epic PRO: feature-gate.js** | **Done (PRO-6)** | **Feature gating for memory** |
 
 ---
 
 ## Architecture Vision
 
-```
-                    SESSION LIFECYCLE
+### Core/Pro Separation (Open Core Model)
 
-  SessionStart ─────────────────────────────── PreCompact ──── Stop
-       │                                            │            │
-       ▼                                            ▼            ▼
-  ┌─────────────┐    ┌──────────────┐    ┌──────────────┐  ┌─────────┐
-  │ Memory      │    │ On-Demand    │    │ Session      │  │ Final   │
-  │ Injection   │    │ Memory Pull  │    │ Digest       │  │ Flush   │
-  │ (Pipeline)  │    │ (Agent API)  │    │ (PreCompact) │  │ (Stop)  │
-  └──────┬──────┘    └──────┬───────┘    └──────┬───────┘  └────┬────┘
-         │                  │                    │               │
-         ▼                  ▼                    ▼               ▼
-  ┌─────────────────────────────────────────────────────────────────┐
-  │                   MEMORY INTELLIGENCE LAYER                      │
-  │                                                                  │
-  │  ┌────────────┐  ┌────────────┐  ┌─────────────┐  ┌──────────┐ │
-  │  │ Progressive│  │ Relevance  │  │ Self-Learn  │  │ Memory   │ │
-  │  │ Disclosure │  │ Scoring    │  │ Engine      │  │ Store    │ │
-  │  └────────────┘  └────────────┘  └─────────────┘  └──────────┘ │
-  └─────────────────────────────────────────────────────────────────┘
-         │                                                │
-         ▼                                                ▼
-  ┌─────────────┐                                  ┌─────────────┐
-  │ .claude/    │                                  │ .aios/      │
-  │ memory/     │                                  │ memories/   │
-  │ (native)    │                                  │ (framework) │
-  └─────────────┘                                  └─────────────┘
+> **Principio:** `aios-core` funciona 100% sem memoria inteligente (como hoje). Quando `aios-pro` (submodule `pro/`) esta presente, o MIS se conecta automaticamente via extension points. Ver [Architecture Vision detalhada](../../../guides/MEMORY-INTELLIGENCE-SYSTEM.md).
+
+```
+  aios-core (Open Source)                    aios-pro (Privado — pro/)
+  ┌────────────────────────┐                ┌──────────────────────────────┐
+  │                        │                │  MEMORY INTELLIGENCE LAYER   │
+  │  Pipeline              │  isProAvail?   │                              │
+  │  ┌──────────────────┐  │ ──────────────►│  ┌───────────┐ ┌──────────┐ │
+  │  │ Extension Points │  │  loadModule    │  │ Capture   │ │ Storage  │ │
+  │  │ (Tier 2 check)   │  │ ──────────────►│  │ (hooks)   │ │ (.aios/) │ │
+  │  └──────────────────┘  │                │  └───────────┘ └──────────┘ │
+  │                        │                │  ┌───────────┐ ┌──────────┐ │
+  │  Hook Runner           │                │  │ Retrieval │ │Evolution │ │
+  │  ┌──────────────────┐  │                │  │ (search)  │ │(learning)│ │
+  │  │ pro-hook-runner   │  │                │  └───────────┘ └──────────┘ │
+  │  │ (graceful no-op)  │  │                │                              │
+  │  └──────────────────┘  │                │  Feature Gate: pro.memory.*  │
+  │                        │                └──────────────────────────────┘
+  │  gotchas-memory.js     │                           │
+  │  (standalone, core)    │                           ▼
+  └────────────────────────┘                ┌──────────────────────────────┐
+         │                                  │  .aios/memories/ (runtime)   │
+         ▼                                  │  .claude/memory/ (native)    │
+  Sem pro: funciona como hoje               └──────────────────────────────┘
 ```
 
 ---
@@ -129,6 +133,22 @@ Extensive investigation of 10 open-source memory systems conducted in MIS-1:
 - cipher, memU, claude-cognitive, PageIndex, openclaw
 
 See [MIS-1 Investigation](story-mis-1-investigation.md) for complete analysis.
+
+---
+
+## Epic Changelog
+
+| Date | Story | Event | Details |
+|------|-------|-------|---------|
+| 2026-02-09 | MIS-1 | ✅ Completed | Investigation & Architecture Design - PR #107 merged |
+| 2026-02-09 | MIS-2 | ✅ Completed | Dead Code Cleanup & Path Repair - 2,397 lines removed, 8 paths fixed (commits: 7c29a748, 20baa911, 15883395) |
+| 2026-02-09 | MIS-3 | 📋 Created | Session Digest (PreCompact Hook) - Story drafted, ready for validation |
+| 2026-02-09 | MIS-3 | ✅ Validated | PO validation passed (9.5/10 score). Improvements added: performance benchmark test, schema versioning strategy. Status Ready for @dev implementation |
+| 2026-02-09 | MIS-3 | ✅ Completed | Implementation done: 2,078 lines across 12 files. 50/50 tests passing. QA Gate PASS. Deployed (commits: 99a476ea, 834d2fe, f389d216) |
+| 2026-02-09 | MIS-4 | 📋 Created | Progressive Memory Retrieval - Story drafted by @sm, validated by @po (10.0/10 score, GO verdict) |
+| 2026-02-09 | MIS-4 | ✅ Validated | PO validation passed (10/10 checklist). Status Pending → Ready for @dev implementation |
+| 2026-02-09 | MIS-4 | ✅ Completed | Implementation done: 121 tests passing, 90.84% coverage, 14x performance improvement. QA Gate PASS. PR #109 merged to main (commit 0239df58). Story closed. |
+| 2026-02-09 | MIS-6 | 📋 Created | Pipeline Integration & Agent Memory API - Story created by @po, status Pending → Ready for validation |
 
 ---
 
