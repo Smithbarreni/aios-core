@@ -260,6 +260,9 @@ async function runPipelineOnPdf(pdfPath, outputDir) {
             }
           }
         }
+        if (prevType && INITIATOR_TYPES.has(currentType) && INITIATOR_TYPES.has(prevType) && j > 0) {
+          boost -= 0.35; reasons.push('consecutive-initiators');
+        }
         if (j === 0) {
           if (RESPONSE_TYPES.has(currentType)) { boost -= 0.15; reasons.push('response-at-start'); }
           if (INITIATOR_TYPES.has(currentType)) { boost += 0.10; reasons.push('initiator-at-start'); }

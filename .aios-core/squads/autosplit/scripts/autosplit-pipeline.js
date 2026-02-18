@@ -900,6 +900,14 @@ async function runPipeline(pdfPath, outputDir, options, log, resumeCheckpoint) {
           }
         }
 
+        // ── Rule 1b: Consecutive initiators — almost always a segmentation error ──
+        // Two initial petitions in sequence is extremely unlikely in real process flow.
+        // Heavy penalty forces reclassification via secondary candidate.
+        if (prevType && INITIATOR_TYPES.has(currentType) && INITIATOR_TYPES.has(prevType) && j > 0) {
+          boost -= 0.35;
+          reasons.push('consecutive-initiators');
+        }
+
         // ── Rule 2: Position boost/penalty ──
         if (j === 0) {
           if (RESPONSE_TYPES.has(currentType)) {

@@ -136,6 +136,37 @@ class PageSegmenter {
   }
 
   /**
+   * Extract numbered paragraph from text lines.
+   * Brazilian legal documents use sequential numbered paragraphs: "09.", "15)", "23 -"
+   * Used to detect document continuation across page boundaries —
+   * if page N ends with paragraph K and page N+1 starts with paragraph K+1,
+   * they belong to the same document regardless of keyword matches.
+   *
+   * @param {string} text - Page text (should be PJe-stripped)
+   * @param {boolean} fromEnd - If true, find last paragraph number; else first
+   * @returns {number|null}
+   */
+  _extractParagraphNum(text, fromEnd = false) {
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 3);
+    // Matches "09.", "15)", "23 -" at line start, followed by space+letter
+    // Excludes dates (4+ digits), monetary values, article references
+    const regex = /^(\d{1,3})\s*[.)\-]\s/;
+
+    if (fromEnd) {
+      for (let i = lines.length - 1; i >= Math.max(0, lines.length - 20); i--) {
+        const match = lines[i].match(regex);
+        if (match) return parseInt(match[1]);
+      }
+    } else {
+      for (let i = 0; i < Math.min(lines.length, 5); i++) {
+        const match = lines[i].match(regex);
+        if (match) return parseInt(match[1]);
+      }
+    }
+    return null;
+  }
+
+  /**
    * Detect boundary markers on a single page.
    * Tests patterns ONLY against the page heading (first 3 meaningful lines after
    * stripping PJe system blocks). This prevents false positives from body text
@@ -188,11 +219,34 @@ class PageSegmenter {
     const segments = [];
     let currentSegment = null;
     let segmentCounter = 0;
+    let prevPageLastParaNum = null;
 
     for (const page of pages) {
       const markers = this.detectBoundaries(page.text, page.page_number);
-      const isNewPiece = markers.some(m => m.weight >= 0.7 && m.rule !== 'blank-page');
+      let isNewPiece = markers.some(m => m.weight >= 0.7 && m.rule !== 'blank-page');
       const isBlank = markers.some(m => m.rule === 'blank-page');
+
+      // Paragraph continuation suppression:
+      // If a boundary keyword was detected in heading but paragraph numbering
+      // continues sequentially from previous page, the keyword is body text
+      // (e.g., "decisão" mentioned narratively), not a real document boundary.
+      // Only suppress for non-structural markers (weight < 0.85) — structural
+      // headers (court-header, petition-start, sentence, acordao) always win.
+      if (isNewPiece && currentSegment && prevPageLastParaNum !== null) {
+        const hasStrongStructural = markers.some(m => m.weight >= 0.85);
+        if (!hasStrongStructural) {
+          const cleaned = this._stripPJeBlocks(page.text);
+          const firstParaNum = this._extractParagraphNum(cleaned, false);
+          if (firstParaNum !== null && firstParaNum === prevPageLastParaNum + 1) {
+            isNewPiece = false;
+          }
+        }
+      }
+
+      // Track last paragraph number for next page's continuation check
+      const cleanedForPara = this._stripPJeBlocks(page.text);
+      const lastParaNum = this._extractParagraphNum(cleanedForPara, true);
+      if (lastParaNum !== null) prevPageLastParaNum = lastParaNum;
 
       if (isNewPiece || !currentSegment) {
         // Close previous segment
