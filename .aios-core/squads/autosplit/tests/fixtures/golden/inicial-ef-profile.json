@@ -5,7 +5,10 @@
   "quality_tier": "A",
   "noise_level": "high",
   "has_text_layer": true,
-  "degraded_pages": [3, 4],
+  "degraded_pages": [
+    3,
+    4
+  ],
   "degraded_count": 2,
   "clean_count": 2,
   "is_mixed_quality": true,
