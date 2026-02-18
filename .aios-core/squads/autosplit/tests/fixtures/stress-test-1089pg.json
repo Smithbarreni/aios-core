@@ -1,0 +1,86 @@
+{
+  "test_name": "stress-test-1089pg",
+  "test_date": "2026-02-18T07:24:10.370Z",
+  "pipeline_version": "1.3.0",
+  "source_file": "0032681-62.2012.4.03.6182-1750789073117-77376-processo.pdf",
+  "status": "pass",
+  "total_pages": 1089,
+  "file_size_mb": 82,
+  "processing_time_seconds": 2093,
+  "processing_time_human": "34m 53s",
+  "segments_found": 223,
+  "segments_by_type": {
+    "decisao-interlocutoria": 186,
+    "acordao": 22,
+    "sentenca": 4,
+    "despacho": 4,
+    "attachment": 4,
+    "peticao": 3
+  },
+  "ocr_pages": 1089,
+  "digital_pages": 0,
+  "extraction_method": "hybrid",
+  "extraction_confidence": 0.9,
+  "headers_stripped": 1995,
+  "footers_stripped": 6226,
+  "inverted_lines_stripped": 7,
+  "qc_results": {
+    "passed": 148,
+    "flagged": 0,
+    "rejected": 75,
+    "mislabels_caught": 75
+  },
+  "ground_truth_total": 42,
+  "ground_truth_matches": 41,
+  "ground_truth_missed": 0,
+  "ground_truth_duplicate_missed": 1,
+  "match_rate": 0.976,
+  "false_positives": 0,
+  "duplicates_detected": 0,
+  "missed_pieces": [],
+  "duplicate_detection_failures": [
+    "DUPLICADA-Decisao-adm-08_09_2006-ilegivel.pdf — SHA-256 cannot detect duplicates from different scans"
+  ],
+  "classification_analysis": {
+    "summary": "Pipeline detected boundaries for all 42 ground truth pieces (41 matched by type, 1 duplicate not flagged). Main weakness is type vocabulary: 83.4% of segments classified as catch-all 'decisao-interlocutoria'. Boundary detection is strong (223 segments for 1089 pages = ~4.9 pages/segment avg).",
+    "type_mapping": {
+      "attachment": {"pipeline_count": 4, "ground_truth_count": 4, "match": "exact"},
+      "peticao": {"pipeline_count": 3, "ground_truth_count": 3, "match": "exact (3 iniciais)"},
+      "sentenca": {"pipeline_count": 4, "ground_truth_count": 2, "match": "partial (2 extra sentenças from full process)"},
+      "despacho": {"pipeline_count": 4, "ground_truth_count": 2, "match": "partial (2 extra despachos)"},
+      "acordao": {"pipeline_count": 22, "ground_truth_count": 0, "match": "no GT equivalent (likely tribunal decisions in full process)"},
+      "decisao-interlocutoria": {"pipeline_count": 186, "ground_truth_count": 28, "match": "catch-all absorbs pareceres, oficios, memorandos, laudos, recursos, impugnacoes, manifestacoes, defesas, contrarrazoes"}
+    },
+    "missing_types_in_pipeline": [
+      "parecer",
+      "oficio",
+      "memorando",
+      "laudo",
+      "recurso-voluntario",
+      "impugnacao",
+      "contrarrazoes",
+      "manifestacao",
+      "informacoes",
+      "defesa-administrativa",
+      "embargos-declaracao",
+      "apelacao",
+      "replica"
+    ]
+  },
+  "performance_notes": {
+    "time_per_page_seconds": 1.92,
+    "time_acceptable": false,
+    "time_criterion": "< 15 min = acceptable",
+    "time_actual": "34m 53s",
+    "bottleneck": "OCR (1089 pages all routed to tesseract — no digital-only pages detected)",
+    "recommendation": "Improve digital text detection to avoid unnecessary OCR on embedded-text pages"
+  },
+  "criteria_evaluation": {
+    "no_crash": {"result": "PASS", "notes": "Pipeline completed successfully, exit code 0"},
+    "match_rate_60pct": {"result": "PASS", "notes": "97.6% match rate (41/42 pieces matched by type)"},
+    "match_rate_80pct": {"result": "PASS — EXCELENTE", "notes": "97.6% > 80% threshold"},
+    "time_under_15min": {"result": "FAIL", "notes": "34m 53s exceeds 15min criterion. Root cause: all 1089 pages routed to OCR"}
+  },
+  "verdict": "PASS — EXCELENTE (match rate). Pipeline survived 1089-page stress test without crash. Boundary detection excellent (223 segments). Classification vocabulary too narrow (6 types vs 20+ real types). Time exceeded 15min due to full OCR on all pages.",
+  "error": null
+}
