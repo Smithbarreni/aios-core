@@ -1,0 +1,18 @@
+{
+  "name": "autosplit",
+  "version": "1.0.0",
+  "description": "Legal document production line — ingests messy case-record PDFs, profiles quality and type, routes through optimal extraction (fast parse or OCR), segments into procedural pieces at page level, and exports one Markdown file per piece with full metadata and traceability.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pdf-parse": "^1.1.1"
+  }
+}

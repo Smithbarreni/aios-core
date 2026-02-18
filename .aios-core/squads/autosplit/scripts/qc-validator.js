@@ -1,0 +1,348 @@
+/**
+ * qc-validator.js — AutoSplit Squad
+ *
+ * Quality control validation and mislabel detection.
+ * Runs after export to catch errors before downstream consumption.
+ *
+ * Usage:
+ *   node qc-validator.js --output-dir ./output/markdown/ --index ./output/markdown/index.json
+ *
+ * Dependencies: none (pure JS)
+ */
+
+const fs = require('fs');
+const path = require('path');
+
+class QCValidator {
+  constructor(options = {}) {
+    this.reviewDir = options.reviewDir || './output/review';
+    this.minContentLength = options.minContentLength || 50;
+    this.mislabelRules = this._buildMislabelRules();
+  }
+
+  /**
+   * Build mislabel detection rules
+   */
+  _buildMislabelRules() {
+    return [
+      {
+        doc_type: 'sentenca',
+        required_patterns: [/julg/i, /procedente|improcedente/i],
+        min_matches: 1,
+        description: 'Sentenca must contain "julgo" or "procedente/improcedente"',
+      },
+      {
+        doc_type: 'peticao-inicial',
+        required_patterns: [/excelent[ií]ssim/i, /requer/i],
+        min_matches: 1,
+        description: 'Peticao-inicial must contain "excelentissimo" or "requer"',
+      },
+      {
+        doc_type: 'acordao',
+        required_patterns: [/ac[oó]rd[aã]/i, /desembargador/i],
+        min_matches: 1,
+        description: 'Acordao must contain "acordam" or "desembargador"',
+      },
+      {
+        doc_type: 'procuracao',
+        required_patterns: [/poder/i, /substabelecer|outorg/i],
+        min_matches: 1,
+        description: 'Procuracao must contain "poder" or "substabelecer/outorga"',
+      },
+      {
+        doc_type: 'certidao',
+        required_patterns: [/certifico|certid[aã]o/i],
+        min_matches: 1,
+        description: 'Certidao must contain "certifico" or "certidao"',
+      },
+    ];
+  }
+
+  /**
+   * Parse YAML frontmatter from markdown file
+   */
+  parseFrontmatter(content) {
+    const match = content.match(/^---\n([\s\S]*?)\n---/);
+    if (!match) return null;
+
+    const meta = {};
+    const lines = match[1].split('\n');
+    for (const line of lines) {
+      const kv = line.match(/^(\w[\w_-]*)\s*:\s*"?([^"]*)"?\s*$/);
+      if (kv) {
+        meta[kv[1]] = kv[2];
+      }
+    }
+    return meta;
+  }
+
+  /**
+   * Extract body text (after frontmatter and title)
+   */
+  extractBody(content) {
+    const withoutFrontmatter = content.replace(/^---\n[\s\S]*?\n---\n*/, '');
+    const withoutTitle = withoutFrontmatter.replace(/^#\s+.*\n*/, '');
+    return withoutTitle.replace(/<!--[\s\S]*?-->/g, '').trim();
+  }
+
+  /**
+   * Check if filename keywords contradict the document classification
+   */
+  checkFilenameMislabel(sourceFilename, docType) {
+    const filenameKeywords = {
+      oficio: 'oficio',
+      laudo: 'laudo-constitutivo',
+      memorando: 'memorando',
+      sentenca: 'sentenca',
+      acordao: 'acordao',
+      peticao: 'peticao-inicial',
+      procuracao: 'procuracao',
+      certidao: 'certidao',
+      portaria: 'portaria',
+      despacho: 'despacho',
+      agravo: 'agravo',
+      parecer: 'parecer-mp',
+    };
+
+    const nameLower = sourceFilename.toLowerCase().replace(/[_\-\.]/g, ' ');
+    for (const [keyword, expectedType] of Object.entries(filenameKeywords)) {
+      if (nameLower.includes(keyword) && docType !== expectedType && docType !== 'unknown') {
+        return {
+          severity: 'FLAG',
+          check: 'mislabel',
+          reason: 'filename_classification_mismatch',
+          detail: `filename contains "${keyword}" but classified as "${docType}" (expected "${expectedType}")`,
+          suggested_action: 'verify document classification manually',
+          message: `Filename "${sourceFilename}" suggests "${expectedType}" but classified as "${docType}"`,
+        };
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Check for mislabels
+   */
+  checkMislabel(docType, bodyText) {
+    const rule = this.mislabelRules.find(r => r.doc_type === docType);
+    if (!rule) return null; // No rule for this type
+
+    const matches = rule.required_patterns.filter(p => p.test(bodyText));
+    if (matches.length >= rule.min_matches) return null; // Passes
+
+    return {
+      severity: 'REJECT',
+      check: 'mislabel',
+      message: rule.description,
+      matched: matches.length,
+      required: rule.min_matches,
+    };
+  }
+
+  /**
+   * Validate a single markdown file
+   */
+  validateFile(filePath) {
+    const issues = [];
+    const content = fs.readFileSync(filePath, 'utf8');
+    const meta = this.parseFrontmatter(content);
+    const body = this.extractBody(content);
+
+    // Check 1: Metadata completeness
+    const requiredFields = [
+      'segment_id', 'source_pdf', 'page_range', 'doc_type',
+      'segmentation_confidence', 'generated_at', 'pipeline_version'
+    ];
+    for (const field of requiredFields) {
+      if (!meta || !meta[field]) {
+        issues.push({
+          severity: 'REJECT',
+          check: 'missing-metadata',
+          message: `Missing required field: ${field}`,
+        });
+      }
+    }
+
+    // Check 2: Empty content
+    if (body.length < this.minContentLength) {
+      issues.push({
+        severity: 'REJECT',
+        check: 'empty-content',
+        message: `Content too short: ${body.length} chars (min: ${this.minContentLength})`,
+      });
+    }
+
+    // Check 3: Mislabel detection
+    if (meta && meta.doc_type) {
+      const mislabel = this.checkMislabel(meta.doc_type, body);
+      if (mislabel) {
+        issues.push(mislabel);
+      }
+    }
+
+    // Check 4: Filename vs classification cross-check
+    if (meta && meta.doc_type && meta.source_pdf) {
+      const filenameMislabel = this.checkFilenameMislabel(meta.source_pdf, meta.doc_type);
+      if (filenameMislabel) {
+        issues.push(filenameMislabel);
+      }
+    }
+
+    // Check 5: Unknown doc_type
+    if (meta && meta.doc_type === 'unknown') {
+      issues.push({
+        severity: 'FLAG',
+        check: 'unknown-doc-type',
+        reason: 'unknown_doc_type',
+        detail: `doc_type=unknown`,
+        suggested_action: 'verify document classification manually',
+        message: 'Document type could not be determined',
+      });
+    }
+
+    // Check 6: Low confidence
+    if (meta && meta.extraction_confidence && parseFloat(meta.extraction_confidence) < 0.7) {
+      issues.push({
+        severity: 'FLAG',
+        check: 'low-extraction-confidence',
+        reason: 'low_extraction_confidence',
+        detail: `extraction_confidence=${meta.extraction_confidence}`,
+        suggested_action: 'check extracted text quality',
+        message: `Extraction confidence ${meta.extraction_confidence} below threshold`,
+      });
+    }
+
+    if (meta && meta.segmentation_confidence && parseFloat(meta.segmentation_confidence) < 0.6) {
+      issues.push({
+        severity: 'FLAG',
+        check: 'low-segmentation-confidence',
+        reason: 'low_segmentation_confidence',
+        detail: `segmentation_confidence=${meta.segmentation_confidence}, doc_type=${meta.doc_type || 'unknown'}`,
+        suggested_action: 'review segment boundaries',
+        message: `Segmentation confidence ${meta.segmentation_confidence} below threshold`,
+      });
+    }
+
+    return {
+      file: path.basename(filePath),
+      meta,
+      issues,
+      status: issues.some(i => i.severity === 'REJECT') ? 'rejected'
+        : issues.some(i => i.severity === 'FLAG') ? 'flagged'
+        : 'passed',
+    };
+  }
+
+  /**
+   * Validate page range coverage and overlaps from index
+   */
+  validatePageRanges(indexData) {
+    const issues = [];
+    const covered = new Set();
+    const ranges = [];
+
+    for (const file of indexData.files) {
+      const [start, end] = file.pages.split('-').map(Number);
+      ranges.push({ file: file.file, start, end });
+
+      for (let p = start; p <= end; p++) {
+        if (covered.has(p)) {
+          issues.push({
+            severity: 'REJECT',
+            check: 'page-overlap',
+            message: `Page ${p} covered by multiple segments (including ${file.file})`,
+          });
+        }
+        covered.add(p);
+      }
+    }
+
+    // Check for gaps
+    if (indexData.total_pages) {
+      for (let p = 1; p <= indexData.total_pages; p++) {
+        if (!covered.has(p)) {
+          issues.push({
+            severity: 'FLAG',
+            check: 'page-gap',
+            message: `Page ${p} not covered by any segment`,
+          });
+        }
+      }
+    }
+
+    return issues;
+  }
+
+  /**
+   * Run full quality gate on output directory
+   */
+  runQualityGate(outputDir, indexPath) {
+    const index = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+    const results = [];
+    let passed = 0;
+    let flagged = 0;
+    let rejected = 0;
+    let mislabels = 0;
+
+    // Validate each file
+    for (const file of index.files) {
+      const filePath = path.join(outputDir, file.file);
+      if (!fs.existsSync(filePath)) {
+        results.push({
+          file: file.file,
+          status: 'rejected',
+          issues: [{ severity: 'REJECT', check: 'missing-file', message: 'File not found on disk' }],
+        });
+        rejected++;
+        continue;
+      }
+
+      const result = this.validateFile(filePath);
+      results.push(result);
+
+      if (result.status === 'passed') passed++;
+      else if (result.status === 'flagged') flagged++;
+      else if (result.status === 'rejected') rejected++;
+
+      if (result.issues.some(i => i.check === 'mislabel')) mislabels++;
+    }
+
+    // Validate page ranges
+    const rangeIssues = this.validatePageRanges(index);
+    if (rangeIssues.length > 0) {
+      results.push({
+        file: '_page-coverage',
+        status: rangeIssues.some(i => i.severity === 'REJECT') ? 'rejected' : 'flagged',
+        issues: rangeIssues,
+      });
+    }
+
+    // Move rejected files to review queue
+    const rejectedFiles = results.filter(r => r.status === 'rejected');
+    if (rejectedFiles.length > 0) {
+      fs.mkdirSync(this.reviewDir, { recursive: true });
+      for (const rf of rejectedFiles) {
+        if (rf.file === '_page-coverage') continue;
+        const src = path.join(outputDir, rf.file);
+        const dest = path.join(this.reviewDir, rf.file);
+        if (fs.existsSync(src)) {
+          fs.copyFileSync(src, dest);
+        }
+      }
+    }
+
+    return {
+      summary: {
+        total_files: index.files.length,
+        passed,
+        flagged,
+        rejected,
+        mislabels_caught: mislabels,
+      },
+      results,
+      review_queue: this.reviewDir,
+    };
+  }
+}
+
+module.exports = { QCValidator };

@@ -1,0 +1,64 @@
+name: autosplit
+version: 1.0.0
+description: >
+  Legal document production line — ingests messy case-record PDFs, profiles quality and type,
+  routes through optimal extraction (fast parse or OCR), segments into procedural pieces at
+  page level, and exports one Markdown file per piece with full metadata and traceability.
+author: Smithbarreni
+license: MIT
+slashPrefix: autosplit
+
+aios:
+  minVersion: "2.1.0"
+  type: squad
+
+components:
+  agents:
+    - pipeline-chief.md
+    - doc-profiler.md
+    - extractor.md
+    - splitter.md
+  tasks:
+    - pipeline-chief-ingest.md
+    - doc-profiler-fingerprint.md
+    - doc-profiler-profile.md
+    - doc-profiler-classify.md
+    - extractor-route.md
+    - extractor-extract.md
+    - splitter-segment.md
+    - splitter-export.md
+    - pipeline-chief-quality-gate.md
+  workflows: []
+  checklists: []
+  templates: []
+  tools: []
+  scripts:
+    - pdf-ingester.js
+    - quality-profiler.js
+    - ocr-router.js
+    - page-segmenter.js
+    - md-exporter.js
+    - qc-validator.js
+
+config:
+  extends: extend
+
+dependencies:
+  node:
+    - pdf-parse  # ^1.1.1 — fast text extraction
+  cli:
+    - tesseract  # 5.5+ — OCR engine
+    - poppler    # pdftotext + pdftoppm
+  cli_install:
+    macos: "brew install tesseract poppler"
+    ubuntu: "apt install tesseract-ocr poppler-utils"
+  python: []
+  squads: []
+
+tags:
+  - legal
+  - document-processing
+  - ocr
+  - pdf
+  - pipeline
+  - automation
