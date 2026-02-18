@@ -1,0 +1,12 @@
+{
+  "file": "Decisao-liminar-MS.pdf",
+  "page_count": 8,
+  "readability_score": 99,
+  "quality_tier": "A",
+  "noise_level": "low",
+  "has_text_layer": true,
+  "degraded_pages": [1, 5, 6],
+  "degraded_count": 3,
+  "clean_count": 5,
+  "is_mixed_quality": true
+}

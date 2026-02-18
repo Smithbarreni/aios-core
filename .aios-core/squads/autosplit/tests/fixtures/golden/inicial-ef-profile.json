@@ -1,0 +1,38 @@
+{
+  "file": "Inicial_EF.pdf",
+  "page_count": 4,
+  "readability_score": 90,
+  "quality_tier": "A",
+  "noise_level": "high",
+  "has_text_layer": true,
+  "degraded_pages": [3, 4],
+  "degraded_count": 2,
+  "clean_count": 2,
+  "is_mixed_quality": true,
+  "page_profiles": [
+    {
+      "page_number": 1,
+      "quality_tier": "A",
+      "is_degraded": false,
+      "empty": false
+    },
+    {
+      "page_number": 2,
+      "quality_tier": "A",
+      "is_degraded": false,
+      "empty": false
+    },
+    {
+      "page_number": 3,
+      "quality_tier": "B",
+      "is_degraded": true,
+      "empty": false
+    },
+    {
+      "page_number": 4,
+      "quality_tier": "A",
+      "is_degraded": true,
+      "empty": false
+    }
+  ]
+}

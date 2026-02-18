@@ -1,0 +1,17 @@
+{
+  "file": "Decisao-liminar-MS.pdf",
+  "segmented_at": "2026-02-18T06:25:10.631Z",
+  "total_segments": 1,
+  "segments": [
+    {
+      "segment_id": "seg-001",
+      "type": "piece",
+      "doc_type": "agravo",
+      "classification_source": "profiler-fallback",
+      "page_start": 1,
+      "page_end": 8,
+      "confidence": 0.5,
+      "boundary_markers": []
+    }
+  ]
+}

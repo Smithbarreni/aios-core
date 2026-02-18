@@ -1,0 +1,46 @@
+{
+  "pipeline_version": "1.3.0",
+  "source": "Inicial_EF.pdf",
+  "stages": {
+    "ingest": {
+      "files": 1,
+      "duplicates": 0,
+      "errors": 0
+    },
+    "profile": {
+      "quality_tier": "A",
+      "readability": 90,
+      "noise": "high",
+      "classification": "peticao-inicial"
+    },
+    "route": {
+      "method": "fast-parse",
+      "engine": "pdf-parse",
+      "preprocessing": ["auto-rotate"]
+    },
+    "extract": {
+      "pages": 4,
+      "method": "hybrid",
+      "confidence": 0.9,
+      "fallback": false,
+      "ocr_pages": [3, 4]
+    },
+    "segment": {
+      "total_segments": 1,
+      "types": {
+        "peticao": 1
+      }
+    },
+    "export": {
+      "files_generated": 1,
+      "index_path": "markdown/index.json"
+    },
+    "qc": {
+      "passed": 1,
+      "flagged": 0,
+      "rejected": 0,
+      "mislabels_caught": 0
+    }
+  },
+  "review_needed": false
+}

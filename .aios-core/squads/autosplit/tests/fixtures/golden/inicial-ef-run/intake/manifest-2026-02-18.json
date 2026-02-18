@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-02-18T06:24:33.878Z",
+  "source": "/Users/smithbarreni/Desktop/Suzano/Cópias/Inicial_EF.pdf",
+  "summary": {
+    "total_scanned": 1,
+    "registered": 1,
+    "duplicates": 0,
+    "errors": 0
+  },
+  "files": [
+    {
+      "name": "Inicial_EF.pdf",
+      "size": 413980,
+      "modified": "2026-02-16T02:54:14.213Z",
+      "source_path": "/Users/smithbarreni/Desktop/Suzano/Cópias/Inicial_EF.pdf",
+      "hash": "04056a0c9ef257a785f765795d0eedb213555d82ad00f67d2740f07f58473f0c",
+      "partial_hash": "0cfb00189dd836c34ab9706dbddc1f744b76c66b0594a299d3a6e7ed507aed50",
+      "timestamp": "2026-02-18T06:24:33.878Z"
+    }
+  ],
+  "duplicates": [],
+  "errors": []
+}

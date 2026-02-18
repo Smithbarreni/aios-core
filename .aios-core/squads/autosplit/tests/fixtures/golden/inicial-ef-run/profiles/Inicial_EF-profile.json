@@ -1,0 +1,59 @@
+{
+  "file": "Inicial_EF.pdf",
+  "file_path": "/Users/smithbarreni/Desktop/Suzano/Cópias/Inicial_EF.pdf",
+  "page_count": 4,
+  "readability_score": 90,
+  "quality_tier": "A",
+  "noise_level": "high",
+  "has_text_layer": true,
+  "degraded_pages": [
+    3,
+    4
+  ],
+  "degraded_count": 2,
+  "clean_count": 2,
+  "is_mixed_quality": true,
+  "page_profiles": [
+    {
+      "page_number": 1,
+      "readability_score": 90,
+      "noise_level": "low",
+      "word_garbage_score": 0.08,
+      "quality_tier": "A",
+      "char_count": 1242,
+      "is_degraded": false,
+      "empty": false
+    },
+    {
+      "page_number": 2,
+      "readability_score": 89,
+      "noise_level": "low",
+      "word_garbage_score": 0.08,
+      "quality_tier": "A",
+      "char_count": 1407,
+      "is_degraded": false,
+      "empty": false
+    },
+    {
+      "page_number": 3,
+      "readability_score": 72,
+      "noise_level": "high",
+      "word_garbage_score": 0.54,
+      "quality_tier": "B",
+      "char_count": 721,
+      "is_degraded": true,
+      "empty": false
+    },
+    {
+      "page_number": 4,
+      "readability_score": 99,
+      "noise_level": "medium",
+      "word_garbage_score": 0.31,
+      "quality_tier": "A",
+      "char_count": 2125,
+      "is_degraded": true,
+      "empty": false
+    }
+  ],
+  "profiled_at": "2026-02-18T06:24:34.771Z"
+}

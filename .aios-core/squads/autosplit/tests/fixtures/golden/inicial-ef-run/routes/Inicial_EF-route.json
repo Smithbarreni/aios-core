@@ -1,0 +1,12 @@
+{
+  "file": "Inicial_EF.pdf",
+  "method": "fast-parse",
+  "engine": "pdf-parse",
+  "preprocessing": [
+    "auto-rotate"
+  ],
+  "rationale": "Clean digital PDF with native text layer",
+  "quality_tier": "A",
+  "readability_score": 90,
+  "routed_at": "2026-02-18T06:24:34.772Z"
+}

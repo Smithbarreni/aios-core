@@ -1,0 +1,29 @@
+{
+  "file": "Inicial_EF.pdf",
+  "pageRoutes": [
+    {
+      "page": 1,
+      "method": "fast-parse",
+      "needs_ocr": false,
+      "reason": "clean digital text"
+    },
+    {
+      "page": 2,
+      "method": "fast-parse",
+      "needs_ocr": false,
+      "reason": "clean digital text"
+    },
+    {
+      "page": 3,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=72, noise=high)"
+    },
+    {
+      "page": 4,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=medium)"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "file": "Decisao-liminar-MS.pdf",
+  "pageRoutes": [
+    {
+      "page": 1,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 2,
+      "method": "fast-parse",
+      "needs_ocr": false,
+      "reason": "clean digital text"
+    },
+    {
+      "page": 3,
+      "method": "fast-parse",
+      "needs_ocr": false,
+      "reason": "clean digital text"
+    },
+    {
+      "page": 4,
+      "method": "fast-parse",
+      "needs_ocr": false,
+      "reason": "clean digital text"
+    },
+    {
+      "page": 5,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=92, noise=low)"
+    },
+    {
+      "page": 6,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=92, noise=low)"
+    },
+    {
+      "page": 7,
+      "method": "fast-parse",
+      "needs_ocr": false,
+      "reason": "clean digital text"
+    },
+    {
+      "page": 8,
+      "method": "fast-parse",
+      "needs_ocr": false,
+      "reason": "clean digital text"
+    }
+  ]
+}

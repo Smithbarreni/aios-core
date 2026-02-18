@@ -1,0 +1,25 @@
+{
+  "file": "Inicial_EF.pdf",
+  "pageRoutes": [
+    {
+      "page": 1,
+      "method": "fast-parse",
+      "needs_ocr": false
+    },
+    {
+      "page": 2,
+      "method": "fast-parse",
+      "needs_ocr": false
+    },
+    {
+      "page": 3,
+      "method": "ocr-standard",
+      "needs_ocr": true
+    },
+    {
+      "page": 4,
+      "method": "ocr-standard",
+      "needs_ocr": true
+    }
+  ]
+}

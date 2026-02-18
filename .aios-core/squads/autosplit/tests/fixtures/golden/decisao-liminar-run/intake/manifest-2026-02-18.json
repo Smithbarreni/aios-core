@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-02-18T06:25:05.728Z",
+  "source": "/Users/smithbarreni/Desktop/Suzano/Cópias/Decisao-liminar-MS.pdf",
+  "summary": {
+    "total_scanned": 1,
+    "registered": 1,
+    "duplicates": 0,
+    "errors": 0
+  },
+  "files": [
+    {
+      "name": "Decisao-liminar-MS.pdf",
+      "size": 317817,
+      "modified": "2026-02-16T03:37:58.962Z",
+      "source_path": "/Users/smithbarreni/Desktop/Suzano/Cópias/Decisao-liminar-MS.pdf",
+      "hash": "fb67b7dc421407137568f1f8063926f65345f1056c075bc109fcc29bdc99674d",
+      "partial_hash": "ebb1bc18ad95d3246b0e62688637e1638b0419dc136ca531e5a7b3e0ad7dca88",
+      "timestamp": "2026-02-18T06:25:05.728Z"
+    }
+  ],
+  "duplicates": [],
+  "errors": []
+}

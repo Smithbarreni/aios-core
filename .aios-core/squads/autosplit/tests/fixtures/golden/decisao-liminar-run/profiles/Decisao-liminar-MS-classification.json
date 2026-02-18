@@ -1,0 +1,10 @@
+{
+  "file": "Decisao-liminar-MS.pdf",
+  "primary_type": "agravo",
+  "confidence": 0.4,
+  "indicators": [
+    "agravo"
+  ],
+  "secondary_type": "acordao",
+  "secondary_confidence": 0.3
+}

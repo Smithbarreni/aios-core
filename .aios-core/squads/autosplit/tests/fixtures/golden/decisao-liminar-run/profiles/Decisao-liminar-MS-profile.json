@@ -1,0 +1,100 @@
+{
+  "file": "Decisao-liminar-MS.pdf",
+  "file_path": "/Users/smithbarreni/Desktop/Suzano/Cópias/Decisao-liminar-MS.pdf",
+  "page_count": 8,
+  "readability_score": 99,
+  "quality_tier": "A",
+  "noise_level": "low",
+  "has_text_layer": true,
+  "degraded_pages": [
+    1,
+    5,
+    6
+  ],
+  "degraded_count": 3,
+  "clean_count": 5,
+  "is_mixed_quality": true,
+  "page_profiles": [
+    {
+      "page_number": 1,
+      "readability_score": 99,
+      "noise_level": "low",
+      "word_garbage_score": 0.15,
+      "quality_tier": "A",
+      "char_count": 1567,
+      "is_degraded": true,
+      "empty": false
+    },
+    {
+      "page_number": 2,
+      "readability_score": 99,
+      "noise_level": "low",
+      "word_garbage_score": 0.08,
+      "quality_tier": "A",
+      "char_count": 1989,
+      "is_degraded": false,
+      "empty": false
+    },
+    {
+      "page_number": 3,
+      "readability_score": 99,
+      "noise_level": "low",
+      "word_garbage_score": 0.08,
+      "quality_tier": "A",
+      "char_count": 2186,
+      "is_degraded": false,
+      "empty": false
+    },
+    {
+      "page_number": 4,
+      "readability_score": 92,
+      "noise_level": "low",
+      "word_garbage_score": 0.08,
+      "quality_tier": "A",
+      "char_count": 2424,
+      "is_degraded": false,
+      "empty": false
+    },
+    {
+      "page_number": 5,
+      "readability_score": 92,
+      "noise_level": "low",
+      "word_garbage_score": 0.23,
+      "quality_tier": "A",
+      "char_count": 2751,
+      "is_degraded": true,
+      "empty": false
+    },
+    {
+      "page_number": 6,
+      "readability_score": 92,
+      "noise_level": "low",
+      "word_garbage_score": 0.15,
+      "quality_tier": "A",
+      "char_count": 2265,
+      "is_degraded": true,
+      "empty": false
+    },
+    {
+      "page_number": 7,
+      "readability_score": 99,
+      "noise_level": "low",
+      "word_garbage_score": 0.08,
+      "quality_tier": "A",
+      "char_count": 2055,
+      "is_degraded": false,
+      "empty": false
+    },
+    {
+      "page_number": 8,
+      "readability_score": 72,
+      "noise_level": "low",
+      "word_garbage_score": 0.08,
+      "quality_tier": "B",
+      "char_count": 749,
+      "is_degraded": false,
+      "empty": false
+    }
+  ],
+  "profiled_at": "2026-02-18T06:25:05.910Z"
+}
