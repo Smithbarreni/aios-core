@@ -6,18 +6,23 @@
       "segment_id": "seg-001",
       "type": "piece",
       "doc_type": "inicial-ms",
-      "classification_source": "per-segment-L1",
+      "classification_source": "per-segment-L2",
       "page_start": 1,
       "page_end": 8,
       "confidence": 0.5,
       "boundary_markers": [],
-      "classification_confidence": 0.95,
+      "classification_confidence": 1,
       "classification_indicators": [
         "mandado\\s+de\\s+seguran[cç]a",
         "impetrante",
         "autoridade\\s+coatora",
         "liminar"
-      ]
+      ],
+      "l2_boost": 0.1,
+      "l2_reasons": [
+        "initiator-at-start"
+      ],
+      "cascade_level": 2
     }
   ]
 }

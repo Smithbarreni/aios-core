@@ -172,6 +172,164 @@ async function runPipelineOnPdf(pdfPath, outputDir) {
     }
   }
 
+  // Stage 5.6: Per-segment classification (L2 — Contextual Positional)
+  {
+    const segClassifierL2 = new DocumentClassifier();
+    const TRANSITIONS = {
+      'inicial-eef':        ['cda', 'laudo-constitutivo', 'documento-fiscal', 'impugnacao', 'decisao-interlocutoria', 'despacho'],
+      'inicial-execfiscal': ['cda', 'documento-fiscal', 'despacho', 'decisao-interlocutoria'],
+      'inicial-ms':         ['decisao-interlocutoria', 'contestacao', 'impugnacao', 'despacho'],
+      'peticao-inicial':    ['decisao-interlocutoria', 'contestacao', 'impugnacao', 'despacho', 'cda'],
+      'cda':                ['impugnacao', 'decisao-interlocutoria', 'despacho', 'documento-fiscal', 'laudo-constitutivo'],
+      'laudo-constitutivo': ['decisao-interlocutoria', 'despacho', 'impugnacao', 'sentenca', 'laudo-constitutivo'],
+      'documento-fiscal':   ['decisao-interlocutoria', 'despacho', 'impugnacao', 'laudo-constitutivo', 'documento-fiscal'],
+      'parecer-tecnico':    ['decisao-interlocutoria', 'despacho', 'sentenca'],
+      'laudo-pericial':     ['sentenca', 'decisao-interlocutoria', 'despacho'],
+      'impugnacao':         ['decisao-interlocutoria', 'sentenca', 'laudo-pericial', 'despacho'],
+      'contestacao':        ['sentenca', 'decisao-interlocutoria', 'laudo-pericial', 'despacho'],
+      'sentenca':           ['edcl', 'apelacao', 'sentenca-edcl', 'certidao-publicacao'],
+      'sentenca-edcl':      ['apelacao', 'edcl', 'certidao-publicacao'],
+      'edcl':               ['sentenca-edcl', 'sentenca', 'acordao', 'acordao-trf'],
+      'apelacao':           ['contrarrazoes', 'acordao', 'acordao-trf', 'distribuicao'],
+      'contrarrazoes':      ['acordao', 'acordao-trf', 'distribuicao', 'pauta'],
+      'agravo':             ['decisao-interlocutoria', 'despacho'],
+      'recurso-especial':   ['acordao', 'contrarrazoes'],
+      'recurso-extraordinario': ['acordao', 'contrarrazoes'],
+      'distribuicao':       ['pauta', 'acordao', 'acordao-trf'],
+      'pauta':              ['acordao', 'acordao-trf'],
+      'acordao':            ['edcl', 'recurso-especial', 'recurso-extraordinario', 'certidao-publicacao'],
+      'acordao-trf':        ['edcl', 'recurso-especial', 'recurso-extraordinario', 'certidao-publicacao'],
+      'auto-infracao':      ['defesa-admin', 'impugnacao-admin', 'decisao-interlocutoria'],
+      'defesa-admin':       ['decisao-admin-1inst', 'decisao-interlocutoria'],
+      'impugnacao-admin':   ['decisao-admin-1inst', 'decisao-interlocutoria'],
+      'decisao-admin-1inst': ['recurso-admin', 'recurso-carf'],
+      'recurso-admin':      ['contrarrazoes-admin', 'resposta-fazenda', 'acordao-carf'],
+      'recurso-carf':       ['contrarrazoes-admin', 'resposta-fazenda', 'acordao-carf'],
+      'contrarrazoes-admin': ['acordao-carf'],
+      'resposta-fazenda':   ['acordao-carf'],
+      'acordao-carf':       ['acordao-csrf', 'edcl', 'recurso-especial'],
+      'acordao-csrf':       ['edcl', 'recurso-especial'],
+      'parecer-pgfn':       ['sentenca', 'decisao-interlocutoria', 'acordao', 'despacho'],
+      'parecer-agu':        ['sentenca', 'decisao-interlocutoria', 'acordao', 'despacho'],
+      'parecer-mp':         ['sentenca', 'decisao-interlocutoria', 'despacho'],
+    };
+    const NEUTRAL_TYPES = new Set([
+      'despacho', 'decisao-interlocutoria', 'certidao', 'certidao-publicacao',
+      'oficio', 'portaria', 'memorando', 'parecer-tecnico',
+      'lixo', 'lixo-procuracao', 'lixo-substabelecimento', 'lixo-societario',
+      'lixo-fianca', 'lixo-capa', 'lixo-certidao-publicacao',
+      'lixo-ato-ordinatorio', 'lixo-termo-abertura', 'unknown',
+    ]);
+    const RESPONSE_TYPES = new Set([
+      'impugnacao', 'contestacao', 'contrarrazoes', 'contrarrazoes-admin',
+      'defesa-admin', 'impugnacao-admin', 'resposta-fazenda', 'sentenca-edcl',
+    ]);
+    const INITIATOR_TYPES = new Set([
+      'inicial-eef', 'inicial-execfiscal', 'inicial-ms', 'peticao-inicial', 'auto-infracao',
+    ]);
+
+    for (let i = 0; i < allSegments.length; i++) {
+      const { segments } = allSegments[i];
+      const extracted = extractedDataList[i];
+      const pages = extracted.pages || [];
+      const pdfClassification = classifications[i] || {};
+      const pdfType = pdfClassification.primary_type || '';
+      const pieceSegments = segments.filter(s => s.type !== 'separator');
+      if (pieceSegments.length === 0) continue;
+      const assignedInicialTypes = {};
+
+      for (let j = 0; j < pieceSegments.length; j++) {
+        const seg = pieceSegments[j];
+        if (!seg.doc_type || seg.doc_type === 'unknown') continue;
+        const prevSeg = j > 0 ? pieceSegments[j - 1] : null;
+        const prevType = prevSeg ? prevSeg.doc_type : null;
+        const currentType = seg.doc_type;
+        const currentConfidence = seg.classification_confidence || 0.5;
+        let boost = 0;
+        const reasons = [];
+
+        if (prevType && !NEUTRAL_TYPES.has(currentType) && !NEUTRAL_TYPES.has(prevType)) {
+          const probableNext = TRANSITIONS[prevType];
+          if (probableNext) {
+            if (probableNext.includes(currentType)) {
+              boost += 0.15;
+              reasons.push(`probable-after-${prevType}`);
+            } else if (INITIATOR_TYPES.has(currentType)) {
+              boost -= 0.20;
+              reasons.push(`impossible-initiator-after-${prevType}`);
+            }
+          }
+        }
+        if (j === 0) {
+          if (RESPONSE_TYPES.has(currentType)) { boost -= 0.15; reasons.push('response-at-start'); }
+          if (INITIATOR_TYPES.has(currentType)) { boost += 0.10; reasons.push('initiator-at-start'); }
+        }
+        if (currentType.startsWith('inicial-')) {
+          if (assignedInicialTypes[currentType]) { boost -= 0.25; reasons.push(`duplicate-${currentType}`); }
+          assignedInicialTypes[currentType] = (assignedInicialTypes[currentType] || 0) + 1;
+        }
+        if (currentType === 'inicial-execfiscal' &&
+            (pdfType === 'inicial-eef' || (pdfClassification.indicators || []).some(ind => /embargos?\s+.*execu/i.test(ind)))) {
+          seg.doc_type = 'inicial-eef';
+          seg.classification_confidence = Math.max(currentConfidence, pdfClassification.confidence || 0.7);
+          seg.classification_source = 'per-segment-L2';
+          seg.l2_previous_type = currentType;
+          seg.l2_boost = 0;
+          seg.l2_reasons = ['pdf-context-eef-overrides-execfiscal'];
+          seg.cascade_level = 2;
+          if (currentType.startsWith('inicial-')) assignedInicialTypes[currentType] = (assignedInicialTypes[currentType] || 0) + 1;
+          continue;
+        }
+        if (currentType === 'inicial-eef' && pdfType === 'inicial-eef') {
+          boost += 0.05; reasons.push('pdf-context-confirms-eef');
+        }
+        if (currentType === pdfType && currentConfidence < 0.8) {
+          boost += 0.10; reasons.push('pdf-segment-agreement');
+        }
+
+        if (boost === 0) continue;
+        const newConfidence = Math.min(1, Math.max(0, Math.round((currentConfidence + boost) * 100) / 100));
+        let reclassified = false;
+
+        if (newConfidence < currentConfidence && newConfidence < 0.5) {
+          const segPages = pages.filter(p => p.page_number >= seg.page_start && p.page_number <= seg.page_end);
+          const segText = segPages.map(p => p.text || '').join('\n');
+          if (segText.trim().length >= 50) {
+            const nonEmptyLines = segText.split('\n').map(l => l.trim()).filter(l => l.length > 3);
+            const heading = nonEmptyLines.slice(0, 3).join('\n');
+            const tail = nonEmptyLines.slice(-3).join('\n');
+            const reClass = segClassifierL2.classify(segText, { heading, tail });
+            if (reClass.secondary_type && reClass.secondary_type !== 'unknown') {
+              let secBoost = 0;
+              const secType = reClass.secondary_type;
+              if (prevType && TRANSITIONS[prevType] && TRANSITIONS[prevType].includes(secType)) secBoost += 0.15;
+              if (j === 0 && INITIATOR_TYPES.has(secType)) secBoost += 0.10;
+              const boostedSecondary = Math.min(1, Math.round((reClass.secondary_confidence + secBoost) * 100) / 100);
+              if (boostedSecondary > newConfidence) {
+                seg.doc_type = secType;
+                seg.classification_confidence = boostedSecondary;
+                seg.classification_source = 'per-segment-L2';
+                seg.classification_indicators = reClass.indicators;
+                seg.l2_previous_type = currentType;
+                seg.l2_boost = boost;
+                seg.l2_reasons = reasons;
+                seg.cascade_level = 2;
+                reclassified = true;
+              }
+            }
+          }
+        }
+        if (!reclassified) {
+          seg.classification_confidence = newConfidence;
+          seg.classification_source = 'per-segment-L2';
+          seg.l2_boost = boost;
+          seg.l2_reasons = reasons;
+          seg.cascade_level = 2;
+        }
+      }
+    }
+  }
+
   // Stage 6: Export + QC
   const mdExporter = new MarkdownExporter({
     outputDir: path.join(outputDir, 'markdown'),

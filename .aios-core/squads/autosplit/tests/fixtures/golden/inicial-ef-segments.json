@@ -6,7 +6,7 @@
       "segment_id": "seg-001",
       "type": "piece",
       "doc_type": "inicial-execfiscal",
-      "classification_source": "per-segment-L1",
+      "classification_source": "per-segment-L2",
       "page_start": 1,
       "page_end": 4,
       "confidence": 0.85,
@@ -18,12 +18,17 @@
           "page": 1
         }
       ],
-      "classification_confidence": 0.84,
+      "classification_confidence": 0.94,
       "classification_indicators": [
         "execu[cç][aã]o\\s+fiscal",
         "fazenda\\s+(nacional|p[uú]blica|estadual|municipal)",
         "d[ií]vida\\s+ativa"
-      ]
+      ],
+      "l2_boost": 0.1,
+      "l2_reasons": [
+        "initiator-at-start"
+      ],
+      "cascade_level": 2
     }
   ]
 }
