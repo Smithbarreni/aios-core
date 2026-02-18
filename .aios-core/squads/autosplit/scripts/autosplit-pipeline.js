@@ -33,6 +33,7 @@ const { OCRRouter, TextExtractor } = require('./ocr-router');
 const { PageSegmenter } = require('./page-segmenter');
 const { MarkdownExporter } = require('./md-exporter');
 const { QCValidator } = require('./qc-validator');
+const { generateIndex } = require('./index-generator');
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -167,6 +168,24 @@ function createLogger(verbose) {
     stage: (id, name, status) => {
       const icon = status === 'start' ? '>>>' : status === 'done' ? '<<<' : '...';
       console.log(`[${ts()}] ${icon} Stage ${id}: ${name} [${status.toUpperCase()}]`);
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Audit trail — persistent decision log
+// ---------------------------------------------------------------------------
+function createAuditTrail(outputDir) {
+  const logPath = path.join(outputDir, 'pipeline-decisions.log');
+  return {
+    logPath,
+    log(stage, message) {
+      const ts = new Date().toISOString().replace('T', ' ').slice(0, 19);
+      const line = `[${ts}] ${stage.toUpperCase()}: ${message}\n`;
+      fs.appendFileSync(logPath, line);
+    },
+    init() {
+      fs.writeFileSync(logPath, `# AutoSplit Pipeline Decision Log\n# Started: ${new Date().toISOString()}\n\n`);
     },
   };
 }
@@ -376,6 +395,13 @@ async function runPipeline(pdfPath, outputDir, options, log, resumeCheckpoint) {
   const stageResults = resumeCheckpoint ? Object.entries(resumeCheckpoint.stage_results || {}).map(([k, v]) => ({ stage: parseInt(k), ...v })) : [];
   const limitations = [];
 
+  // Initialize audit trail
+  const audit = createAuditTrail(outputDir);
+  if (!resumeCheckpoint) {
+    audit.init();
+  }
+  audit.log('pipeline', `Processing ${fileName} (resume=${!!resumeCheckpoint})`);
+
   // Build checkpoint state
   const checkpoint = {
     pipeline_version: VERSION,
@@ -416,8 +442,10 @@ async function runPipeline(pdfPath, outputDir, options, log, resumeCheckpoint) {
   }
   if (missingCmds.length > 0) {
     log.warn(`CLI deps missing: ${missingCmds.join(', ')} — OCR features will be degraded`);
+    audit.log('preflight', `Missing CLI deps: ${missingCmds.join(', ')}`);
   } else {
     log.verbose('Preflight OK: pdftotext, tesseract, pdftoppm all available');
+    audit.log('preflight', 'All CLI deps available (pdftotext, tesseract, pdftoppm)');
   }
 
   // ── Stage 1: INTAKE ────────────────────────────────────────────────────
@@ -433,6 +461,7 @@ async function runPipeline(pdfPath, outputDir, options, log, resumeCheckpoint) {
     manifest = ingestResult.manifest;
     const elapsed = t1.done();
     log.verbose(`Intake: ${manifest.summary.registered} registered, ${manifest.summary.duplicates} duplicates, ${manifest.summary.errors} errors`);
+    audit.log('intake', `${manifest.summary.registered} PDFs registered, ${manifest.summary.duplicates} duplicates, ${manifest.summary.errors} errors`);
 
     completedStages.add(1);
     checkpoint.completed_stages = [...completedStages];
@@ -510,6 +539,7 @@ async function runPipeline(pdfPath, outputDir, options, log, resumeCheckpoint) {
       const classificationPath = path.join(outputDir, 'profiles', `${path.basename(file.name, path.extname(file.name))}-classification.json`);
       fs.writeFileSync(classificationPath, JSON.stringify({ file: file.name, ...classification }, null, 2));
       log.verbose(`Profiled ${file.name}: tier=${profile.quality_tier}, type=${classification.primary_type} (${classification.confidence})`);
+      audit.log('profile', `${file.name}: tier=${profile.quality_tier}, clean=${profile.clean_count || 0}, degraded=${profile.degraded_count || 0}, type=${classification.primary_type}(${classification.confidence})`);
     }
 
     const elapsed = t2.done();
@@ -558,6 +588,10 @@ async function runPipeline(pdfPath, outputDir, options, log, resumeCheckpoint) {
       } else {
         log.verbose(`Routed ${profile.file}: ${decision.method} (${decision.engine}) — document-level only`);
       }
+
+      const ocrRouted = pageRoutes ? pageRoutes.filter(r => r.needs_ocr).length : 0;
+      const fastRouted = pageRoutes ? pageRoutes.filter(r => !r.needs_ocr).length : 0;
+      audit.log('route', `${profile.file}: method=${decision.method}, engine=${decision.engine}, fastparse=${fastRouted}, ocr=${ocrRouted}`);
 
       pageRoutesList.push(pageRoutes);
     }
@@ -621,6 +655,7 @@ async function runPipeline(pdfPath, outputDir, options, log, resumeCheckpoint) {
 
       extractor.saveExtraction(extracted, file.name);
       extractedDataList.push(extracted);
+      audit.log('extract', `${file.name}: ${extracted.pages.length} pages, method=${extracted.method || 'fast-parse'}, ocr_pages=[${(extracted.ocr_pages || []).join(',')}], confidence=${extracted.overall_confidence}`);
     }
 
     // ── Stage 4.5: Re-classification post-OCR ──────────────────────────
@@ -676,6 +711,8 @@ async function runPipeline(pdfPath, outputDir, options, log, resumeCheckpoint) {
       segmenter.saveSegments(segments, file.name);
       allSegments.push({ file: file.name, segments });
       log.verbose(`Segmented ${file.name}: ${segments.length} segments`);
+      const segTypes = segments.map(s => s.doc_type).join(', ');
+      audit.log('segment', `${file.name}: ${segments.length} boundaries detected (${segTypes})`);
     }
 
     const elapsed = t5.done();
@@ -731,6 +768,17 @@ async function runPipeline(pdfPath, outputDir, options, log, resumeCheckpoint) {
       );
       qcResults.push(qc);
       log.verbose(`QC ${file.name}: ${qc.summary.passed} passed, ${qc.summary.flagged} flagged, ${qc.summary.rejected} rejected`);
+      audit.log('qc', `${file.name}: ${qc.summary.mislabels_caught} mislabels, ${qc.summary.passed} passed, ${qc.summary.flagged} flagged, ${qc.summary.rejected} rejected`);
+
+      // Generate INDEX.md for this file's markdown dir
+      try {
+        const indexResult = generateIndex(exportResult.indexPath, fileMarkdownDir);
+        log.verbose(`INDEX.md generated: ${indexResult.indexMdPath} (processType=${indexResult.processType || 'unknown'})`);
+        audit.log('export', `INDEX.md generated for ${file.name} (processType=${indexResult.processType || 'auto'}, coverage=${indexResult.essentialPieces ? (indexResult.essentialPieces.coverage * 100).toFixed(0) + '%' : 'N/A'})`);
+      } catch (err) {
+        log.warn(`INDEX.md generation failed for ${file.name}: ${err.message}`);
+        audit.log('export', `INDEX.md generation FAILED for ${file.name}: ${err.message}`);
+      }
     }
 
     // BUG-5 fix: merge all QC results instead of retaining only last
@@ -743,6 +791,8 @@ async function runPipeline(pdfPath, outputDir, options, log, resumeCheckpoint) {
       },
       files: qcResults,
     };
+
+    audit.log('export', `Total: ${qcResult.summary.passed} passed, ${qcResult.summary.flagged} flagged, ${qcResult.summary.rejected} rejected, ${qcResult.summary.mislabels_caught} mislabels`);
 
     const elapsed = t6.done();
     completedStages.add(6);

@@ -59,7 +59,7 @@ describe('QCValidator', () => {
 
     test('returns null for doc_type without mislabel rule', () => {
       const body = 'Qualquer texto aqui.';
-      const result = validator.checkMislabel('oficio', body);
+      const result = validator.checkMislabel('attachment', body);
       expect(result).toBeNull();
     });
   });

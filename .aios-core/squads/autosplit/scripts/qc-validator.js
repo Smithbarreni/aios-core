@@ -13,6 +13,26 @@
 const fs = require('fs');
 const path = require('path');
 
+/**
+ * Essential pieces per process type.
+ * Used by checkEssentialPieces to validate completeness.
+ */
+const ESSENTIAL_PIECES = {
+  'eef': ['inicial-eef', 'cda', 'sentenca'],
+  'fase-administrativa': [
+    'defesa-administrativa', 'impugnacao-auto-infracao',
+    'recurso-voluntario', 'parecer-seort', 'decisao-adene',
+  ],
+  'mandado-seguranca': ['inicial-ms', 'informacoes-ms', 'decisao-liminar', 'sentenca'],
+  'embargos-execucao': [
+    'impugnacao-embargos', 'replica-impugnacao', 'sentenca-embargos',
+    'embargos-declaracao', 'apelacao', 'contrarrazoes',
+  ],
+  'recurso': ['peticao-recursal', 'contrarrazoes', 'acordao'],
+  'acao-rescisoria': ['inicial', 'contestacao', 'sentenca'],
+  'agravo': ['peticao-recursal', 'decisao-agravada', 'contrarrazoes'],
+};
+
 class QCValidator {
   constructor(options = {}) {
     this.reviewDir = options.reviewDir || './output/review';
@@ -21,10 +41,11 @@ class QCValidator {
   }
 
   /**
-   * Build mislabel detection rules
+   * Build mislabel detection rules — 18 patterns based on real Suzano case (42 pieces)
    */
   _buildMislabelRules() {
     return [
+      // --- Original 5 ---
       {
         doc_type: 'sentenca',
         required_patterns: [/julg/i, /procedente|improcedente/i],
@@ -55,7 +76,119 @@ class QCValidator {
         min_matches: 1,
         description: 'Certidao must contain "certifico" or "certidao"',
       },
+      // --- 13 new patterns from Suzano ---
+      {
+        doc_type: 'inicial-eef',
+        required_patterns: [/execu[cç][aã]o\s+fiscal/i, /exequente|executad/i, /cda|certid[aã]o.*d[ií]vida.*ativa/i],
+        min_matches: 1,
+        description: 'Inicial-EEF must reference "execucao fiscal", "exequente/executado", or "CDA"',
+      },
+      {
+        doc_type: 'cda',
+        required_patterns: [/certid[aã]o.*d[ií]vida.*ativa/i, /inscri[cç][aã]o.*n/i],
+        min_matches: 1,
+        description: 'CDA must contain "certidao de divida ativa" or "inscricao"',
+      },
+      {
+        doc_type: 'defesa-administrativa',
+        required_patterns: [/defesa/i, /auto\s+de\s+infra[cç][aã]o|processo\s+administrativo/i],
+        min_matches: 1,
+        description: 'Defesa-administrativa must contain "defesa" or "auto de infracao/processo administrativo"',
+      },
+      {
+        doc_type: 'impugnacao-auto-infracao',
+        required_patterns: [/impugna/i, /auto\s+de\s+infra[cç][aã]o/i],
+        min_matches: 1,
+        description: 'Impugnacao-auto-infracao must contain "impugna" or "auto de infracao"',
+      },
+      {
+        doc_type: 'recurso-voluntario',
+        required_patterns: [/recurso\s+volunt[aá]rio/i, /recorrente|recorrid/i],
+        min_matches: 1,
+        description: 'Recurso-voluntario must contain "recurso voluntario" or "recorrente/recorrido"',
+      },
+      {
+        doc_type: 'parecer',
+        required_patterns: [/parecer/i],
+        min_matches: 1,
+        description: 'Parecer must contain "parecer"',
+      },
+      {
+        doc_type: 'oficio',
+        required_patterns: [/of[ií]cio/i],
+        min_matches: 1,
+        description: 'Oficio must contain "oficio"',
+      },
+      {
+        doc_type: 'inicial-ms',
+        required_patterns: [/mandado\s+de\s+seguran[cç]a/i, /impetrante|impetrad/i, /autoridade\s+coator/i],
+        min_matches: 1,
+        description: 'Inicial-MS must reference "mandado de seguranca", "impetrante/impetrado", or "autoridade coatora"',
+      },
+      {
+        doc_type: 'decisao-liminar',
+        required_patterns: [/liminar/i, /defiro|indefiro|concedo|tutela/i],
+        min_matches: 1,
+        description: 'Decisao-liminar must contain "liminar" or "defiro/indefiro/concedo/tutela"',
+      },
+      {
+        doc_type: 'decisao-interlocutoria',
+        required_patterns: [/decis[aã]o/i, /determino|intime-se|defiro|indefiro/i],
+        min_matches: 1,
+        description: 'Decisao-interlocutoria must contain "decisao" and an imperative verb',
+      },
+      {
+        doc_type: 'embargos-declaracao',
+        required_patterns: [/embargos.*declara[cç][aã]o/i, /obscuridade|contradi[cç][aã]o|omiss[aã]o/i],
+        min_matches: 1,
+        description: 'Embargos-declaracao must reference "embargos de declaracao" or their grounds',
+      },
+      {
+        doc_type: 'apelacao',
+        required_patterns: [/apela[cç][aã]o|apelante|apelad/i],
+        min_matches: 1,
+        description: 'Apelacao must contain "apelacao", "apelante", or "apelado"',
+      },
+      {
+        doc_type: 'contrarrazoes',
+        required_patterns: [/contrarraz[oõ]es/i, /contrarraz[oõ]es.*apela/i, /contrarraz[oõ]es.*recurso/i],
+        min_matches: 1,
+        description: 'Contrarrazoes must contain "contrarrazoes"',
+      },
+      {
+        doc_type: 'laudo-constitutivo',
+        required_patterns: [/laudo/i, /constitutivo|pericial|vistoria/i],
+        min_matches: 1,
+        description: 'Laudo-constitutivo must contain "laudo" or "constitutivo/pericial/vistoria"',
+      },
+      {
+        doc_type: 'despacho',
+        required_patterns: [/despacho/i, /cumpra-se|intime-se|cite-se|notifique-se/i],
+        min_matches: 1,
+        description: 'Despacho must contain "despacho" or a procedural command',
+      },
     ];
+  }
+
+  /**
+   * Check essential pieces for a given process type.
+   *
+   * @param {object[]} segments - Array of segment objects with doc_type
+   * @param {string} processType - Key from ESSENTIAL_PIECES
+   * @returns {{ complete: boolean, missing: string[], coverage: number }}
+   */
+  checkEssentialPieces(segments, processType) {
+    const found = segments.map(s => s.doc_type || (s.meta && s.meta.doc_type));
+    const expected = ESSENTIAL_PIECES[processType] || [];
+    if (expected.length === 0) {
+      return { complete: true, missing: [], coverage: 1 };
+    }
+    const missing = expected.filter(e => !found.includes(e));
+    return {
+      complete: missing.length === 0,
+      missing,
+      coverage: (expected.length - missing.length) / expected.length,
+    };
   }
 
   /**
@@ -90,18 +223,52 @@ class QCValidator {
    */
   checkFilenameMislabel(sourceFilename, docType) {
     const filenameKeywords = {
+      'inicial-eef': 'inicial-eef',
+      'inicial eef': 'inicial-eef',
+      'inicial_eef': 'inicial-eef',
+      'inicial ef': 'inicial-eef',
+      'cda': 'cda',
+      'defesa-administrativa': 'defesa-administrativa',
+      'defesa administrativa': 'defesa-administrativa',
+      'impugnacao-auto': 'impugnacao-auto-infracao',
+      'impugnacao auto': 'impugnacao-auto-infracao',
+      'recurso-voluntario': 'recurso-voluntario',
+      'recurso voluntario': 'recurso-voluntario',
+      'parecer-seort': 'parecer-seort',
+      'parecer seort': 'parecer-seort',
+      'decisao-adene': 'decisao-adene',
+      'decisao adene': 'decisao-adene',
+      'inicial-ms': 'inicial-ms',
+      'inicial ms': 'inicial-ms',
+      'informacoes-ms': 'informacoes-ms',
+      'informacoes ms': 'informacoes-ms',
+      'decisao-liminar': 'decisao-liminar',
+      'decisao liminar': 'decisao-liminar',
+      'decisao-interlocutoria': 'decisao-interlocutoria',
+      'impugnacao-embargos': 'impugnacao-embargos',
+      'impugnacao embargos': 'impugnacao-embargos',
+      'replica-impugnacao': 'replica-impugnacao',
+      'replica impugnacao': 'replica-impugnacao',
+      'sentenca-embargos': 'sentenca-embargos',
+      'sentenca embargos': 'sentenca-embargos',
+      'embargos-declaracao': 'embargos-declaracao',
+      'embargos declaracao': 'embargos-declaracao',
+      'contrarrazoes': 'contrarrazoes',
+      'laudo-constitutivo': 'laudo-constitutivo',
+      'laudo constitutivo': 'laudo-constitutivo',
       oficio: 'oficio',
       laudo: 'laudo-constitutivo',
       memorando: 'memorando',
       sentenca: 'sentenca',
       acordao: 'acordao',
+      apelacao: 'apelacao',
       peticao: 'peticao-inicial',
       procuracao: 'procuracao',
       certidao: 'certidao',
       portaria: 'portaria',
       despacho: 'despacho',
       agravo: 'agravo',
-      parecer: 'parecer-mp',
+      parecer: 'parecer',
     };
 
     const nameLower = sourceFilename.toLowerCase().replace(/[_\-\.]/g, ' ');
@@ -345,4 +512,4 @@ class QCValidator {
   }
 }
 
-module.exports = { QCValidator };
+module.exports = { QCValidator, ESSENTIAL_PIECES };
