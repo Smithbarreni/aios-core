@@ -1,0 +1,65 @@
+{
+  "file": "Laudo-constitutivo-0123_2002.pdf",
+  "file_path": "/Users/smithbarreni/Desktop/Suzano/Cópias/Laudo-constitutivo-0123_2002.pdf",
+  "page_count": 4,
+  "readability_score": 99,
+  "quality_tier": "A",
+  "noise_level": "medium",
+  "has_text_layer": false,
+  "degraded_pages": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "degraded_count": 4,
+  "clean_count": 0,
+  "is_mixed_quality": false,
+  "page_profiles": [
+    {
+      "page_number": 1,
+      "readability_score": 89,
+      "noise_level": "low",
+      "word_garbage_score": 0.23,
+      "quality_tier": "A",
+      "char_count": 1202,
+      "is_degraded": true,
+      "empty": false,
+      "propagated": false
+    },
+    {
+      "page_number": 2,
+      "readability_score": 99,
+      "noise_level": "low",
+      "word_garbage_score": 0.23,
+      "quality_tier": "A",
+      "char_count": 1928,
+      "is_degraded": true,
+      "empty": false,
+      "propagated": false
+    },
+    {
+      "page_number": 3,
+      "readability_score": 99,
+      "noise_level": "medium",
+      "word_garbage_score": 0.38,
+      "quality_tier": "A",
+      "char_count": 1982,
+      "is_degraded": true,
+      "empty": false,
+      "propagated": false
+    },
+    {
+      "page_number": 4,
+      "readability_score": 79,
+      "noise_level": "medium",
+      "word_garbage_score": 0.31,
+      "quality_tier": "B",
+      "char_count": 703,
+      "is_degraded": true,
+      "empty": false,
+      "propagated": false
+    }
+  ],
+  "profiled_at": "2026-02-18T06:45:05.128Z"
+}

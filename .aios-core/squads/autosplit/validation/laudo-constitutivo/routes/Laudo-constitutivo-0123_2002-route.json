@@ -1,0 +1,13 @@
+{
+  "file": "Laudo-constitutivo-0123_2002.pdf",
+  "method": "ocr-standard",
+  "engine": "tesseract",
+  "preprocessing": [
+    "auto-rotate",
+    "deskew"
+  ],
+  "rationale": "Scan with good quality — standard OCR sufficient",
+  "quality_tier": "A",
+  "readability_score": 99,
+  "routed_at": "2026-02-18T06:45:05.129Z"
+}

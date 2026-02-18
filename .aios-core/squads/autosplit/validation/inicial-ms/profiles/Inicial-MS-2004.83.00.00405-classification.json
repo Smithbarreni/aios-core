@@ -1,0 +1,12 @@
+{
+  "file": "Inicial-MS-2004.83.00.00405.pdf",
+  "primary_type": "laudo-constitutivo",
+  "confidence": 0.36,
+  "indicators": [
+    "superintend[eê]ncia",
+    "sudene",
+    "redu[cç][aã]o\\s+do\\s+imposto"
+  ],
+  "secondary_type": "peticao-inicial",
+  "secondary_confidence": 0.28
+}

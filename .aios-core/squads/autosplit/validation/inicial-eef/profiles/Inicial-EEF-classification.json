@@ -1,0 +1,13 @@
+{
+  "file": "Inicial-EEF.pdf",
+  "primary_type": "laudo-constitutivo",
+  "confidence": 0.49,
+  "indicators": [
+    "superintend[eê]ncia",
+    "sudene",
+    "adene",
+    "redu[cç][aã]o\\s+do\\s+imposto"
+  ],
+  "secondary_type": "agravo",
+  "secondary_confidence": 0.4
+}

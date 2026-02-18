@@ -1,0 +1,221 @@
+{
+  "benchmark_version": "1.0.0",
+  "pipeline_version": "1.3.0",
+  "run_date": "2026-02-18T06:44:00Z",
+  "ground_truth_source": "~/Desktop/Suzano/Cópias/ — 42 peças separadas manualmente",
+  "summary": {
+    "total_pdfs_tested": 3,
+    "total_pages_processed": 53,
+    "total_segments_found": 4,
+    "total_ocr_pages": 41,
+    "total_processing_time_ms": 74458,
+    "classifications_correct": 1,
+    "classifications_partially_correct": 1,
+    "classifications_incorrect": 1,
+    "classification_accuracy_pct": 33.3,
+    "segmentation_boundaries_correct": 1,
+    "segmentation_boundaries_false_positive": 1,
+    "segmentation_boundaries_missed": 0,
+    "index_md_generated": 3,
+    "qc_mislabels_detected": 3,
+    "pipeline_crashes": 0
+  },
+  "pdfs": [
+    {
+      "file": "Inicial-EEF.pdf",
+      "file_path": "~/Desktop/Suzano/Cópias/Inicial-EEF.pdf",
+      "file_size_kb": 724,
+      "ground_truth_type": "inicial-eef",
+      "pages": {
+        "total": 23,
+        "clean": 12,
+        "degraded": 11,
+        "ocr_pages": [1, 2, 3, 4, 8, 11, 14, 16, 18, 19, 23]
+      },
+      "processing": {
+        "duration_ms": 17907,
+        "extraction_method": "hybrid",
+        "extraction_confidence": 0.92,
+        "quality_tier": "A"
+      },
+      "segmentation": {
+        "segments_found": 2,
+        "segments_expected": 1,
+        "segments": [
+          {
+            "id": "seg-001",
+            "doc_type": "peticao",
+            "pages": "1-4",
+            "confidence": 0.85,
+            "classification_source": "boundary-rules",
+            "ground_truth_type": "inicial-eef",
+            "classification_correct": false,
+            "notes": "Partially correct: detected as 'peticao' but should be 'inicial-eef'. Content is indeed a petition but type is more specific."
+          },
+          {
+            "id": "seg-002",
+            "doc_type": "decisao-interlocutoria",
+            "pages": "5-23",
+            "confidence": 0.75,
+            "classification_source": "boundary-rules",
+            "ground_truth_type": "inicial-eef (continuation)",
+            "classification_correct": false,
+            "notes": "FALSE POSITIVE boundary: pages 5-23 are continuation of the same petition, not a separate decisao-interlocutoria. The boundary rule was triggered by legal citation language that mimics decision headers."
+          }
+        ],
+        "assessment": "partially_correct",
+        "issues": [
+          "False positive boundary at page 5 — continuation of same document classified as separate decisao-interlocutoria",
+          "Initial-eef type not detected — classified as generic 'peticao'",
+          "QC correctly flagged 2 mislabels"
+        ]
+      },
+      "index_md": {
+        "generated": true,
+        "process_type": "unknown",
+        "essential_pieces_coverage": null
+      }
+    },
+    {
+      "file": "Laudo-constitutivo-0123_2002.pdf",
+      "file_path": "~/Desktop/Suzano/Cópias/Laudo-constitutivo-0123_2002.pdf",
+      "file_size_kb": 362,
+      "ground_truth_type": "laudo-constitutivo",
+      "pages": {
+        "total": 4,
+        "clean": 0,
+        "degraded": 4,
+        "ocr_pages": [1, 2, 3, 4]
+      },
+      "processing": {
+        "duration_ms": 5807,
+        "extraction_method": "hybrid",
+        "extraction_confidence": 0.85,
+        "quality_tier": "A"
+      },
+      "segmentation": {
+        "segments_found": 1,
+        "segments_expected": 1,
+        "segments": [
+          {
+            "id": "seg-001",
+            "doc_type": "laudo-constitutivo",
+            "pages": "1-4",
+            "confidence": 0.50,
+            "classification_source": "profiler-fallback",
+            "ground_truth_type": "laudo-constitutivo",
+            "classification_correct": true,
+            "notes": "Correct classification via profiler-fallback. No boundary markers detected (entire doc is single piece). Low confidence (0.50) because no boundary rules fired — only profiler classification was used."
+          }
+        ],
+        "assessment": "correct",
+        "issues": [
+          "Low confidence (0.50) despite correct classification — profiler-fallback doesn't boost confidence",
+          "No boundary rules for laudo-constitutivo type exist yet"
+        ]
+      },
+      "index_md": {
+        "generated": true,
+        "process_type": "unknown",
+        "essential_pieces_coverage": null
+      }
+    },
+    {
+      "file": "Inicial-MS-2004.83.00.00405.pdf",
+      "file_path": "~/Desktop/Suzano/Cópias/Inicial-MS-2004.83.00.00405.pdf",
+      "file_size_kb": 805,
+      "ground_truth_type": "inicial-ms",
+      "pages": {
+        "total": 26,
+        "clean": 0,
+        "degraded": 26,
+        "ocr_pages": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+      },
+      "processing": {
+        "duration_ms": 50744,
+        "extraction_method": "hybrid",
+        "extraction_confidence": 0.90,
+        "quality_tier": "A"
+      },
+      "segmentation": {
+        "segments_found": 1,
+        "segments_expected": 1,
+        "segments": [
+          {
+            "id": "seg-001",
+            "doc_type": "laudo-constitutivo",
+            "pages": "1-26",
+            "confidence": 0.50,
+            "classification_source": "profiler-fallback",
+            "ground_truth_type": "inicial-ms",
+            "classification_correct": false,
+            "notes": "INCORRECT classification: document is a Mandado de Seguranca petition but was classified as laudo-constitutivo by profiler-fallback. The segmenter found no boundary markers. OCR quality was acceptable (0.90 confidence) but the text contained OCR artifacts that prevented pattern matching. Content clearly shows 'JUIZ FEDERAL' and legal petition structure."
+          }
+        ],
+        "assessment": "incorrect",
+        "issues": [
+          "Misclassification: inicial-ms classified as laudo-constitutivo",
+          "Profiler classification confidence very low (0.36) but still selected as primary type",
+          "Segmenter boundary rules for 'mandado de seguranca' / 'inicial-ms' not triggered despite OCR text containing relevant keywords",
+          "High noise level in profile (noise=high) may have degraded text quality for pattern matching",
+          "QC correctly flagged 1 mislabel"
+        ]
+      },
+      "index_md": {
+        "generated": true,
+        "process_type": "unknown",
+        "essential_pieces_coverage": null
+      }
+    }
+  ],
+  "known_issues": [
+    {
+      "id": "BENCH-001",
+      "severity": "high",
+      "category": "classification",
+      "description": "Profiler classifies everything as 'laudo-constitutivo' when no strong signal exists. Default fallback bias towards this type.",
+      "affected_pdfs": ["Inicial-MS-2004.83.00.00405.pdf"],
+      "suggested_fix": "Expand DocumentClassifier patterns for inicial-ms, defesa-administrativa, and other common petition types"
+    },
+    {
+      "id": "BENCH-002",
+      "severity": "medium",
+      "category": "segmentation",
+      "description": "False positive boundary detection: legal citation language within a petition body triggers 'decisao' boundary rule, splitting a single document into two segments.",
+      "affected_pdfs": ["Inicial-EEF.pdf"],
+      "suggested_fix": "Add context-awareness to boundary rules — check if 'decisao' pattern appears within a running petition body (e.g., after 'EXMO' or numbered arguments)"
+    },
+    {
+      "id": "BENCH-003",
+      "severity": "medium",
+      "category": "classification",
+      "description": "inicial-eef not detected as specific type — generic 'peticao' used instead. No specific boundary rule for EEF petitions.",
+      "affected_pdfs": ["Inicial-EEF.pdf"],
+      "suggested_fix": "Add boundary pattern for 'inicial-eef' that matches EXECUÇÃO FISCAL keyword combinations near petition start"
+    },
+    {
+      "id": "BENCH-004",
+      "severity": "low",
+      "category": "index",
+      "description": "INDEX.md processType always 'unknown' — essential pieces checklist not populated because process type auto-detection is not working for these document types.",
+      "affected_pdfs": ["all"],
+      "suggested_fix": "Improve process type inference from document content or classification results"
+    },
+    {
+      "id": "BENCH-005",
+      "severity": "low",
+      "category": "ocr",
+      "description": "OCR quality acceptable but artifacts remain in output. Hybrid extraction works correctly but text has garbled characters especially in headers (OCR artifacts from scanned seals, signatures, stamps).",
+      "affected_pdfs": ["Inicial-EEF.pdf", "Inicial-MS-2004.83.00.00405.pdf"],
+      "suggested_fix": "Post-OCR text cleaning stage to remove common artifacts (line noise, stamp artifacts)"
+    }
+  ],
+  "performance": {
+    "avg_time_per_page_ms": 1404,
+    "avg_time_per_page_ocr_ms": 1589,
+    "avg_time_per_page_fastparse_ms": 29,
+    "total_time_all_pdfs_ms": 74458,
+    "ocr_throughput_pages_per_sec": 0.63,
+    "notes": "OCR is the bottleneck — ~1.5s/page with tesseract + pdftoppm. Fast-parse is negligible. Hybrid extraction correctly selects OCR only for degraded pages."
+  }
+}

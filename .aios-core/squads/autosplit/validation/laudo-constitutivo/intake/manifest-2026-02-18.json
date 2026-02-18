@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-02-18T06:45:05.002Z",
+  "source": "/Users/smithbarreni/Desktop/Suzano/Cópias/Laudo-constitutivo-0123_2002.pdf",
+  "summary": {
+    "total_scanned": 1,
+    "registered": 1,
+    "duplicates": 0,
+    "errors": 0
+  },
+  "files": [
+    {
+      "name": "Laudo-constitutivo-0123_2002.pdf",
+      "size": 370796,
+      "modified": "2026-02-16T02:55:26.702Z",
+      "source_path": "/Users/smithbarreni/Desktop/Suzano/Cópias/Laudo-constitutivo-0123_2002.pdf",
+      "hash": "c1fb386b65cffefc53a5b1d3c8c4b9aa102d8a39a0091e688aa0630e77470321",
+      "partial_hash": "0147ebfc43f053c963b41203af58ea28b5443b01de9c425ab6167ddd81bef575",
+      "timestamp": "2026-02-18T06:45:05.002Z"
+    }
+  ],
+  "duplicates": [],
+  "errors": []
+}

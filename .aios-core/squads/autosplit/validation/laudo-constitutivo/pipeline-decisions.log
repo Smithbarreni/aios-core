@@ -1,0 +1,13 @@
+# AutoSplit Pipeline Decision Log
+# Started: 2026-02-18T06:45:04.985Z
+
+[2026-02-18 06:45:04] PIPELINE: Processing Laudo-constitutivo-0123_2002.pdf (resume=false)
+[2026-02-18 06:45:04] PREFLIGHT: All CLI deps available (pdftotext, tesseract, pdftoppm)
+[2026-02-18 06:45:05] INTAKE: 1 PDFs registered, 0 duplicates, 0 errors
+[2026-02-18 06:45:05] PROFILE: Laudo-constitutivo-0123_2002.pdf: tier=A, clean=0, degraded=4, type=laudo-constitutivo(0.24)
+[2026-02-18 06:45:05] ROUTE: Laudo-constitutivo-0123_2002.pdf: method=ocr-standard, engine=tesseract, fastparse=0, ocr=4
+[2026-02-18 06:45:10] EXTRACT: Laudo-constitutivo-0123_2002.pdf: 4 pages, method=hybrid, ocr_pages=[1,2,3,4], confidence=0.85
+[2026-02-18 06:45:10] SEGMENT: Laudo-constitutivo-0123_2002.pdf: 1 boundaries detected (laudo-constitutivo)
+[2026-02-18 06:45:10] QC: Laudo-constitutivo-0123_2002.pdf: 0 mislabels, 0 passed, 1 flagged, 0 rejected
+[2026-02-18 06:45:10] EXPORT: INDEX.md generated for Laudo-constitutivo-0123_2002.pdf (processType=auto, coverage=N/A)
+[2026-02-18 06:45:10] EXPORT: Total: 0 passed, 1 flagged, 0 rejected, 0 mislabels

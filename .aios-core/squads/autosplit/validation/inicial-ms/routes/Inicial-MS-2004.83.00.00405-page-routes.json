@@ -1,0 +1,161 @@
+{
+  "file": "Inicial-MS-2004.83.00.00405.pdf",
+  "pageRoutes": [
+    {
+      "page": 1,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=89, noise=low)"
+    },
+    {
+      "page": 2,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 3,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 4,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 5,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 6,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 7,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=92, noise=high)"
+    },
+    {
+      "page": 8,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 9,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 10,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=medium)"
+    },
+    {
+      "page": 11,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 12,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=82, noise=high)"
+    },
+    {
+      "page": 13,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 14,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 15,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 16,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 17,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=82, noise=high)"
+    },
+    {
+      "page": 18,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 19,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 20,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 21,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 22,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 23,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 24,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 25,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 26,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=82, noise=low)"
+    }
+  ]
+}

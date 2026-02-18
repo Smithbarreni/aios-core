@@ -1,0 +1,12 @@
+{
+  "file": "Inicial-EEF.pdf",
+  "method": "fast-parse",
+  "engine": "pdf-parse",
+  "preprocessing": [
+    "auto-rotate"
+  ],
+  "rationale": "Clean digital PDF with native text layer",
+  "quality_tier": "A",
+  "readability_score": 100,
+  "routed_at": "2026-02-18T06:44:30.226Z"
+}

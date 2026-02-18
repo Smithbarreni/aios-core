@@ -1,0 +1,13 @@
+{
+  "file": "Inicial-MS-2004.83.00.00405.pdf",
+  "method": "ocr-standard",
+  "engine": "tesseract",
+  "preprocessing": [
+    "auto-rotate",
+    "deskew"
+  ],
+  "rationale": "Scan with good quality — standard OCR sufficient",
+  "quality_tier": "A",
+  "readability_score": 99,
+  "routed_at": "2026-02-18T06:45:24.529Z"
+}

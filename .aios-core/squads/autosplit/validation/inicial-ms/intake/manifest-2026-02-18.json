@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-02-18T06:45:24.111Z",
+  "source": "/Users/smithbarreni/Desktop/Suzano/Cópias/Inicial-MS-2004.83.00.00405.pdf",
+  "summary": {
+    "total_scanned": 1,
+    "registered": 1,
+    "duplicates": 0,
+    "errors": 0
+  },
+  "files": [
+    {
+      "name": "Inicial-MS-2004.83.00.00405.pdf",
+      "size": 823923,
+      "modified": "2026-02-16T03:05:14.225Z",
+      "source_path": "/Users/smithbarreni/Desktop/Suzano/Cópias/Inicial-MS-2004.83.00.00405.pdf",
+      "hash": "aeecd2e17d024ed036a9bfb689ca7ba6ee9a208c49422a8bb588cc07f02c3407",
+      "partial_hash": "86aa04dec6e04ae0c093224341490fdb55e5b72145cf5c69ead711fff4a1fb38",
+      "timestamp": "2026-02-18T06:45:24.111Z"
+    }
+  ],
+  "duplicates": [],
+  "errors": []
+}

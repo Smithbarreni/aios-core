@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-02-18T06:44:29.853Z",
+  "source": "/Users/smithbarreni/Desktop/Suzano/Cópias/Inicial-EEF.pdf",
+  "summary": {
+    "total_scanned": 1,
+    "registered": 1,
+    "duplicates": 0,
+    "errors": 0
+  },
+  "files": [
+    {
+      "name": "Inicial-EEF.pdf",
+      "size": 741298,
+      "modified": "2026-02-16T02:53:51.764Z",
+      "source_path": "/Users/smithbarreni/Desktop/Suzano/Cópias/Inicial-EEF.pdf",
+      "hash": "dc93d04086a1ccda00280bda94a91b751ab2f45aaa5e6aaa32632297311f91a1",
+      "partial_hash": "449d68969b3e7b6a0be0f2f4f8f296fdc1f6c6c035c5d0dbe60005b4a8b36fee",
+      "timestamp": "2026-02-18T06:44:29.853Z"
+    }
+  ],
+  "duplicates": [],
+  "errors": []
+}

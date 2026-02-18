@@ -1,0 +1,18 @@
+{
+  "source_pdf": "Inicial-MS-2004.83.00.00405.pdf",
+  "source_pdf_path": "/Users/smithbarreni/Desktop/Suzano/Cópias/Inicial-MS-2004.83.00.00405.pdf",
+  "generated_at": "2026-02-18T06:46:14.836Z",
+  "pipeline_version": "1.3.0",
+  "total_pages": 26,
+  "total_segments": 1,
+  "files": [
+    {
+      "file": "001-piece-laudo-constitutivo.md",
+      "file_path": "/Users/smithbarreni/.aios-core/.aios-core/squads/autosplit/validation/inicial-ms/markdown/001-piece-laudo-constitutivo.md",
+      "segment_id": "seg-001",
+      "doc_type": "laudo-constitutivo",
+      "pages": "1-26",
+      "confidence": 0.5
+    }
+  ]
+}

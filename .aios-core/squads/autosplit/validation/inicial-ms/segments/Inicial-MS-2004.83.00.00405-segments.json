@@ -1,0 +1,17 @@
+{
+  "file": "Inicial-MS-2004.83.00.00405.pdf",
+  "segmented_at": "2026-02-18T06:46:14.835Z",
+  "total_segments": 1,
+  "segments": [
+    {
+      "segment_id": "seg-001",
+      "type": "piece",
+      "doc_type": "laudo-constitutivo",
+      "classification_source": "profiler-fallback",
+      "page_start": 1,
+      "page_end": 26,
+      "confidence": 0.5,
+      "boundary_markers": []
+    }
+  ]
+}

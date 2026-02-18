@@ -1,0 +1,29 @@
+{
+  "file": "Laudo-constitutivo-0123_2002.pdf",
+  "pageRoutes": [
+    {
+      "page": 1,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=89, noise=low)"
+    },
+    {
+      "page": 2,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=low)"
+    },
+    {
+      "page": 3,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=99, noise=medium)"
+    },
+    {
+      "page": 4,
+      "method": "ocr-standard",
+      "needs_ocr": true,
+      "reason": "degraded (readability=79, noise=medium)"
+    }
+  ]
+}

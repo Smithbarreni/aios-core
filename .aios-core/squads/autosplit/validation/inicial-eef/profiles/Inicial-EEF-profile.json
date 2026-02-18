@@ -1,0 +1,258 @@
+{
+  "file": "Inicial-EEF.pdf",
+  "file_path": "/Users/smithbarreni/Desktop/Suzano/Cópias/Inicial-EEF.pdf",
+  "page_count": 23,
+  "readability_score": 100,
+  "quality_tier": "A",
+  "noise_level": "low",
+  "has_text_layer": true,
+  "degraded_pages": [
+    1,
+    2,
+    3,
+    4,
+    8,
+    11,
+    14,
+    16,
+    18,
+    19,
+    23
+  ],
+  "degraded_count": 11,
+  "clean_count": 12,
+  "is_mixed_quality": true,
+  "page_profiles": [
+    {
+      "page_number": 1,
+      "readability_score": 90,
+      "noise_level": "low",
+      "word_garbage_score": 0.15,
+      "quality_tier": "A",
+      "char_count": 1051,
+      "is_degraded": true,
+      "empty": false
+    },
+    {
+      "page_number": 2,
+      "readability_score": 100,
+      "noise_level": "low",
+      "word_garbage_score": 0.15,
+      "quality_tier": "A",
+      "char_count": 2216,
+      "is_degraded": true,
+      "empty": false
+    },
+    {
+      "page_number": 3,
+      "readability_score": 100,
+      "noise_level": "low",
+      "word_garbage_score": 0.15,
+      "quality_tier": "A",
+      "char_count": 4450,
+      "is_degraded": true,
+      "empty": false
+    },
+    {
+      "page_number": 4,
+      "readability_score": 100,
+      "noise_level": "low",
+      "word_garbage_score": 0.15,
+      "quality_tier": "A",
+      "char_count": 2548,
+      "is_degraded": true,
+      "empty": false
+    },
+    {
+      "page_number": 5,
+      "readability_score": 100,
+      "noise_level": "low",
+      "word_garbage_score": 0,
+      "quality_tier": "A",
+      "char_count": 2433,
+      "is_degraded": false,
+      "empty": false
+    },
+    {
+      "page_number": 6,
+      "readability_score": 100,
+      "noise_level": "low",
+      "word_garbage_score": 0.08,
+      "quality_tier": "A",
+      "char_count": 2503,
+      "is_degraded": false,
+      "empty": false
+    },
+    {
+      "page_number": 7,
+      "readability_score": 99,
+      "noise_level": "low",
+      "word_garbage_score": 0.08,
+      "quality_tier": "A",
+      "char_count": 1841,
+      "is_degraded": false,
+      "empty": false
+    },
+    {
+      "page_number": 8,
+      "readability_score": 99,
+      "noise_level": "low",
+      "word_garbage_score": 0.15,
+      "quality_tier": "A",
+      "char_count": 3057,
+      "is_degraded": true,
+      "empty": false
+    },
+    {
+      "page_number": 9,
+      "readability_score": 100,
+      "noise_level": "low",
+      "word_garbage_score": 0.08,
+      "quality_tier": "A",
+      "char_count": 2557,
+      "is_degraded": false,
+      "empty": false
+    },
+    {
+      "page_number": 10,
+      "readability_score": 100,
+      "noise_level": "low",
+      "word_garbage_score": 0.08,
+      "quality_tier": "A",
+      "char_count": 2407,
+      "is_degraded": false,
+      "empty": false
+    },
+    {
+      "page_number": 11,
+      "readability_score": 100,
+      "noise_level": "low",
+      "word_garbage_score": 0.15,
+      "quality_tier": "A",
+      "char_count": 2283,
+      "is_degraded": true,
+      "empty": false
+    },
+    {
+      "page_number": 12,
+      "readability_score": 99,
+      "noise_level": "low",
+      "word_garbage_score": 0.08,
+      "quality_tier": "A",
+      "char_count": 2064,
+      "is_degraded": false,
+      "empty": false
+    },
+    {
+      "page_number": 13,
+      "readability_score": 99,
+      "noise_level": "low",
+      "word_garbage_score": 0.08,
+      "quality_tier": "A",
+      "char_count": 2547,
+      "is_degraded": false,
+      "empty": false
+    },
+    {
+      "page_number": 14,
+      "readability_score": 99,
+      "noise_level": "low",
+      "word_garbage_score": 0.15,
+      "quality_tier": "A",
+      "char_count": 2154,
+      "is_degraded": true,
+      "empty": false
+    },
+    {
+      "page_number": 15,
+      "readability_score": 99,
+      "noise_level": "low",
+      "word_garbage_score": 0.08,
+      "quality_tier": "A",
+      "char_count": 2296,
+      "is_degraded": false,
+      "empty": false
+    },
+    {
+      "page_number": 16,
+      "readability_score": 100,
+      "noise_level": "low",
+      "word_garbage_score": 0.15,
+      "quality_tier": "A",
+      "char_count": 2836,
+      "is_degraded": true,
+      "empty": false
+    },
+    {
+      "page_number": 17,
+      "readability_score": 100,
+      "noise_level": "low",
+      "word_garbage_score": 0.08,
+      "quality_tier": "A",
+      "char_count": 2403,
+      "is_degraded": false,
+      "empty": false
+    },
+    {
+      "page_number": 18,
+      "readability_score": 99,
+      "noise_level": "low",
+      "word_garbage_score": 0.15,
+      "quality_tier": "A",
+      "char_count": 2940,
+      "is_degraded": true,
+      "empty": false
+    },
+    {
+      "page_number": 19,
+      "readability_score": 99,
+      "noise_level": "low",
+      "word_garbage_score": 0.15,
+      "quality_tier": "A",
+      "char_count": 2344,
+      "is_degraded": true,
+      "empty": false
+    },
+    {
+      "page_number": 20,
+      "readability_score": 99,
+      "noise_level": "low",
+      "word_garbage_score": 0.08,
+      "quality_tier": "A",
+      "char_count": 2226,
+      "is_degraded": false,
+      "empty": false
+    },
+    {
+      "page_number": 21,
+      "readability_score": 100,
+      "noise_level": "low",
+      "word_garbage_score": 0.08,
+      "quality_tier": "A",
+      "char_count": 2594,
+      "is_degraded": false,
+      "empty": false
+    },
+    {
+      "page_number": 22,
+      "readability_score": 100,
+      "noise_level": "low",
+      "word_garbage_score": 0.08,
+      "quality_tier": "A",
+      "char_count": 2239,
+      "is_degraded": false,
+      "empty": false
+    },
+    {
+      "page_number": 23,
+      "readability_score": 89,
+      "noise_level": "low",
+      "word_garbage_score": 0.15,
+      "quality_tier": "A",
+      "char_count": 1451,
+      "is_degraded": true,
+      "empty": false
+    }
+  ],
+  "profiled_at": "2026-02-18T06:44:30.224Z"
+}

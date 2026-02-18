@@ -1,0 +1,9 @@
+{
+  "file": "Laudo-constitutivo-0123_2002.pdf",
+  "primary_type": "laudo-constitutivo",
+  "confidence": 0.24,
+  "indicators": [
+    "sudene",
+    "incentivo\\s+fiscal"
+  ]
+}
