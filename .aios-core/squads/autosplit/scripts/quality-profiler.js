@@ -759,22 +759,338 @@ class QualityProfiler {
 }
 
 /**
- * Document Classifier — determines legal document type
+ * VALID_TYPES — whitelist of all recognized document types.
+ * Any classification result not in this set is forced to 'unknown'.
+ */
+const VALID_TYPES = new Set([
+  // ── Fase Judicial: Petições Iniciais ──
+  'peticao-inicial',
+  'inicial-eef',
+  'inicial-execfiscal',
+  'inicial-ms',
+  // ── Fase Judicial: Contestação / Impugnação ──
+  'contestacao',
+  'impugnacao',
+  // ── Fase Judicial: Instrução ──
+  'laudo-pericial',
+  'decisao-interlocutoria',
+  // ── Fase Judicial: Julgamento ──
+  'sentenca',
+  'sentenca-edcl',
+  'edcl',
+  // ── Fase Judicial: Recurso ──
+  'apelacao',
+  'contrarrazoes',
+  'agravo',
+  'recurso-especial',
+  'recurso-extraordinario',
+  // ── Fase Judicial: Tribunal ──
+  'acordao',
+  'acordao-trf',
+  'distribuicao',
+  'pauta',
+  // ── Fase Administrativa ──
+  'auto-infracao',
+  'defesa-admin',
+  'impugnacao-admin',
+  'decisao-admin-1inst',
+  'recurso-admin',
+  'recurso-carf',
+  'contrarrazoes-admin',
+  'resposta-fazenda',
+  'acordao-carf',
+  'acordao-csrf',
+  // ── Documentos Probatórios / Anexos ──
+  'cda',
+  'laudo-constitutivo',
+  'documento-fiscal',
+  'parecer-tecnico',
+  // ── Decisões e Despachos ──
+  'despacho',
+  // ── Peças Ministeriais ──
+  'parecer-mp',
+  'parecer-pgfn',
+  'parecer-agu',
+  // ── Ofícios e Comunicações ──
+  'oficio',
+  'portaria',
+  'memorando',
+  // ── Certidões ──
+  'certidao',
+  'certidao-publicacao',
+  // ── LIXO ──
+  'lixo',
+  'lixo-procuracao',
+  'lixo-societario',
+  'lixo-fianca',
+  'lixo-capa',
+  'lixo-certidao-publicacao',
+  'lixo-ato-ordinatorio',
+  'lixo-substabelecimento',
+  'lixo-termo-abertura',
+  // ── Meta ──
+  'unknown',
+]);
+
+/**
+ * Document Classifier — determines legal document type (L1: pattern-based)
+ *
+ * Cascade Level 1: Pure regex heuristics.
+ * Supports 45+ document types from EEF taxonomy.
+ * Classifies using full text with heading/tail boosting.
  */
 class DocumentClassifier {
   constructor() {
     this.rules = [
-      { type: 'peticao-inicial', patterns: [/excelent[ií]ssim[oa]/i, /requer\s/i, /qualifica[cç][aã]o\s+das?\s+partes/i], weight: 0.85 },
-      { type: 'contestacao', patterns: [/contesta\s/i, /preliminar/i, /m[ée]rito/i], weight: 0.8 },
-      { type: 'sentenca', patterns: [/julgo/i, /procedente/i, /improcedente/i], weight: 0.9 },
-      { type: 'acordao', patterns: [/ac[oó]rd[aã][om]/i, /desembargador/i, /ementa/i], weight: 0.9 },
-      { type: 'despacho', patterns: [/cite-se/i, /intime-se/i, /despacho/i], weight: 0.7 },
-      { type: 'decisao-interlocutoria', patterns: [/defiro/i, /indefiro/i, /tutela/i], weight: 0.75 },
-      { type: 'agravo', patterns: [/agravo/i, /efeito\s+suspensivo/i], weight: 0.8 },
-      { type: 'parecer-mp', patterns: [/minist[eé]rio\s+p[uú]blico/i, /opina/i], weight: 0.8 },
-      { type: 'laudo-pericial', patterns: [/perito/i, /quesitos/i, /laudo\s+pericial/i], weight: 0.8 },
-      { type: 'procuracao', patterns: [/poderes/i, /substabelecer/i, /outorg/i], weight: 0.8 },
-      { type: 'certidao', patterns: [/certifico/i, /dou\s+f[eé]/i], weight: 0.8 },
+      // ── Fase Judicial: Petições Iniciais ─────────────────────────
+      { type: 'inicial-eef', patterns: [
+        /embargos?\s+[àa]\s+execu[cç][aã]o\s+fiscal/i,
+        /excelent[ií]ssim[oa]/i,
+        /embargante/i,
+        /requer\s/i,
+      ], weight: 0.9 },
+      { type: 'inicial-execfiscal', patterns: [
+        /execu[cç][aã]o\s+fiscal/i,
+        /fazenda\s+(nacional|p[uú]blica|estadual|municipal)/i,
+        /d[ií]vida\s+ativa/i,
+        /citar?\s+o\s+executado/i,
+      ], weight: 0.85 },
+      { type: 'inicial-ms', patterns: [
+        /mandado\s+de\s+seguran[cç]a/i,
+        /impetrante/i,
+        /autoridade\s+coatora/i,
+        /liminar/i,
+      ], weight: 0.9 },
+      { type: 'peticao-inicial', patterns: [
+        /excelent[ií]ssim[oa]/i,
+        /requer\s/i,
+        /qualifica[cç][aã]o\s+das?\s+partes/i,
+      ], weight: 0.85 },
+
+      // ── Fase Judicial: Contestação / Impugnação ──────────────────
+      { type: 'impugnacao', patterns: [
+        /impugna[cç][aã]o/i,
+        /fazenda\s+nacional/i,
+        /impugnante/i,
+        /embargos?\s+improcedentes/i,
+      ], weight: 0.85 },
+      { type: 'contestacao', patterns: [
+        /contesta[cç][aã]o/i,
+        /contesta\s/i,
+        /preliminar/i,
+        /m[ée]rito/i,
+      ], weight: 0.8 },
+
+      // ── Fase Judicial: Instrução ─────────────────────────────────
+      { type: 'laudo-pericial', patterns: [
+        /perito/i,
+        /quesitos/i,
+        /laudo\s+pericial/i,
+        /per[ií]cia/i,
+        /assist[eê]nte\s+t[eé]cnico/i,
+      ], weight: 0.85 },
+
+      // ── Fase Judicial: Julgamento ────────────────────────────────
+      { type: 'sentenca', patterns: [
+        /julgo/i,
+        /procedente/i,
+        /improcedente/i,
+        /senten[cç]a/i,
+        /vistos\s*(,|\.|\s)/i,
+      ], weight: 0.9 },
+      { type: 'sentenca-edcl', patterns: [
+        /embargos?\s+de\s+declara[cç][aã]o/i,
+        /senten[cç]a/i,
+        /acolho/i,
+        /rejeito\s+os\s+embargos/i,
+      ], weight: 0.85 },
+      { type: 'edcl', patterns: [
+        /embargos?\s+de\s+declara[cç][aã]o/i,
+        /omiss[aã]o/i,
+        /contradi[cç][aã]o/i,
+        /obscuridade/i,
+      ], weight: 0.8 },
+
+      // ── Fase Judicial: Recurso ───────────────────────────────────
+      { type: 'apelacao', patterns: [
+        /apela[cç][aã]o/i,
+        /apelante/i,
+        /apelado/i,
+        /tribunal\s+regional/i,
+      ], weight: 0.85 },
+      { type: 'contrarrazoes', patterns: [
+        /contrarraz[oõ]es/i,
+        /contra-raz[oõ]es/i,
+        /apelado/i,
+        /nega\s*r?\s+provimento/i,
+      ], weight: 0.85 },
+      { type: 'agravo', patterns: [
+        /agravo/i,
+        /efeito\s+suspensivo/i,
+        /agravo\s+de\s+instrumento/i,
+        /agravante/i,
+      ], weight: 0.8 },
+      { type: 'recurso-especial', patterns: [
+        /recurso\s+especial/i,
+        /superior\s+tribunal/i,
+        /stj/i,
+        /al[ií]nea/i,
+      ], weight: 0.85 },
+      { type: 'recurso-extraordinario', patterns: [
+        /recurso\s+extraordin[aá]rio/i,
+        /supremo\s+tribunal/i,
+        /stf/i,
+        /repercuss[aã]o\s+geral/i,
+      ], weight: 0.85 },
+
+      // ── Fase Judicial: Tribunal ──────────────────────────────────
+      { type: 'acordao', patterns: [
+        /ac[oó]rd[aã][om]/i,
+        /desembargador/i,
+        /ementa/i,
+        /v\.?\s*u\.?/i,
+      ], weight: 0.9 },
+      { type: 'acordao-trf', patterns: [
+        /ac[oó]rd[aã][om]/i,
+        /tribunal\s+regional\s+federal/i,
+        /trf/i,
+        /turma/i,
+      ], weight: 0.9 },
+      { type: 'distribuicao', patterns: [
+        /distribui[cç][aã]o/i,
+        /certid[aã]o\s+de\s+distribui[cç][aã]o/i,
+        /relator/i,
+        /c[aâ]mara/i,
+      ], weight: 0.75 },
+      { type: 'pauta', patterns: [
+        /pauta/i,
+        /inclus[aã]o\s+em\s+pauta/i,
+        /sess[aã]o\s+de\s+julgamento/i,
+        /designo/i,
+      ], weight: 0.75 },
+
+      // ── Fase Administrativa ──────────────────────────────────────
+      { type: 'auto-infracao', patterns: [
+        /auto\s+de\s+infra[cç][aã]o/i,
+        /penalidade\s+(isolada|apl[ií]cada)/i,
+        /multa\s+(de|no\s+valor)/i,
+        /notifica[cç][aã]o\s+de\s+lan[cç]amento/i,
+      ], weight: 0.85 },
+      { type: 'defesa-admin', patterns: [
+        /impugna[cç][aã]o\s+administrativa/i,
+        /defesa\s+administrativa/i,
+        /delegacia\s+da\s+receita\s+federal/i,
+        /drj/i,
+      ], weight: 0.8 },
+      { type: 'impugnacao-admin', patterns: [
+        /impugna[cç][aã]o\s+ao\s+auto/i,
+        /impugna[cç][aã]o\s+administrativa/i,
+        /delegacia\s+de\s+julgamento/i,
+      ], weight: 0.8 },
+      { type: 'decisao-admin-1inst', patterns: [
+        /delegacia\s+da\s+receita\s+federal\s+de\s+julgamento/i,
+        /drj/i,
+        /decis[aã]o\s+administrativa/i,
+        /julgamento\s+administrativo/i,
+      ], weight: 0.8 },
+      { type: 'recurso-admin', patterns: [
+        /recurso\s+(volunt[aá]rio|administrativo)/i,
+        /conselho\s+administrativo/i,
+        /carf/i,
+      ], weight: 0.85 },
+      { type: 'recurso-carf', patterns: [
+        /carf/i,
+        /conselho\s+administrativo\s+de\s+recursos\s+fiscais/i,
+        /recurso\s+volunt[aá]rio/i,
+        /recorrente/i,
+      ], weight: 0.85 },
+      { type: 'contrarrazoes-admin', patterns: [
+        /contrarraz[oõ]es/i,
+        /carf/i,
+        /recurso\s+(volunt[aá]rio|administrativo)/i,
+      ], weight: 0.8 },
+      { type: 'resposta-fazenda', patterns: [
+        /procuradoria/i,
+        /pgfn/i,
+        /resposta\s+ao\s+recurso/i,
+        /contrarraz[oõ]es\s+da\s+fazenda/i,
+      ], weight: 0.8 },
+      { type: 'acordao-carf', patterns: [
+        /ac[oó]rd[aã][om]/i,
+        /carf/i,
+        /conselho\s+administrativo\s+de\s+recursos\s+fiscais/i,
+        /c[aâ]mara/i,
+      ], weight: 0.9 },
+      { type: 'acordao-csrf', patterns: [
+        /csrf/i,
+        /c[aâ]mara\s+superior/i,
+        /recurso\s+especial\s+do\s+contribuinte/i,
+        /recurso\s+especial\s+da\s+fazenda/i,
+      ], weight: 0.9 },
+
+      // ── Documentos Probatórios / Anexos ──────────────────────────
+      { type: 'cda', patterns: [
+        /certid[aã]o\s+de\s+d[ií]vida\s+ativa/i,
+        /cda/i,
+        /inscri[cç][aã]o\s+em\s+d[ií]vida\s+ativa/i,
+      ], weight: 0.85 },
+      { type: 'laudo-constitutivo', patterns: [
+        /laudo\s+constitutivo/i,
+        /laudo\s+const/i,  // OCR-tolerant partial match
+        /superintend[eê]ncia/i,
+        /sudene/i,
+        /adene/i,
+        /incentivo\s+fiscal/i,
+        /redu[cç][aã]o\s+do\s+imposto/i,
+        /redu[cç][aã]o\s+do\s+irpj/i,
+      ], weight: 0.85 },
+      { type: 'documento-fiscal', patterns: [
+        /nota\s+fiscal/i,
+        /dan?fe/i,
+        /demonstrativo\s+fiscal/i,
+        /guia\s+de\s+(recolhimento|pagamento)/i,
+        /darf/i,
+      ], weight: 0.75 },
+      { type: 'parecer-tecnico', patterns: [
+        /parecer\s+t[eé]cnico/i,
+        /laudo\s+t[eé]cnico/i,
+        /relat[oó]rio\s+t[eé]cnico/i,
+        /an[aá]lise\s+t[eé]cnica/i,
+      ], weight: 0.8 },
+
+      // ── Decisões e Despachos ─────────────────────────────────────
+      { type: 'decisao-interlocutoria', patterns: [
+        /defiro/i,
+        /indefiro/i,
+        /tutela/i,
+        /decis[aã]o\s+interlocut[oó]ria/i,
+      ], weight: 0.75 },
+      { type: 'despacho', patterns: [
+        /cite-se/i,
+        /intime-se/i,
+        /despacho/i,
+        /mero\s+expediente/i,
+      ], weight: 0.7 },
+
+      // ── Peças Ministeriais ───────────────────────────────────────
+      { type: 'parecer-mp', patterns: [
+        /minist[eé]rio\s+p[uú]blico/i,
+        /opina/i,
+        /promotor/i,
+        /parquet/i,
+      ], weight: 0.8 },
+      { type: 'parecer-pgfn', patterns: [
+        /pgfn/i,
+        /procuradoria[- ]geral\s+da\s+fazenda/i,
+        /parecer\s+pgfn/i,
+      ], weight: 0.85 },
+      { type: 'parecer-agu', patterns: [
+        /agu/i,
+        /advocacia[- ]geral\s+da\s+uni[aã]o/i,
+        /parecer\s+agu/i,
+      ], weight: 0.85 },
+
+      // ── Ofícios e Comunicações ───────────────────────────────────
       { type: 'oficio', patterns: [
         /of[ií]cio\s+n[º°.\s]/i,
         /of[ií]cio\s+de\s+n[º°.\s]/i,
@@ -784,55 +1100,256 @@ class DocumentClassifier {
         /prezados?\s+senhor/i,
         /senhor\s+(delegado|secret[aá]rio|diretor|superintendente)/i,
       ], weight: 0.70 },
-      { type: 'laudo-constitutivo', patterns: [/laudo\s+constitutivo/i, /superintend[eê]ncia/i, /sudene/i, /adene/i, /incentivo\s+fiscal/i, /redu[cç][aã]o\s+do\s+imposto/i, /redu[cç][aã]o\s+do\s+irpj/i], weight: 0.85 },
-      { type: 'auto-infracao', patterns: [/auto\s+de\s+infra[cç][aã]o/i, /penalidade\s+(isolada|apl[ií]cada)/i, /multa\s+(de|no\s+valor)/i, /notifica[cç][aã]o\s+de\s+lan[cç]amento/i], weight: 0.8 },
-      { type: 'portaria', patterns: [/portaria\s+n[º°]/i, /resolve:/i, /o\s+ministro/i, /o\s+superintendente/i], weight: 0.75 },
+      { type: 'portaria', patterns: [
+        /portaria\s+n[º°]/i,
+        /resolve:/i,
+        /o\s+ministro/i,
+        /o\s+superintendente/i,
+      ], weight: 0.75 },
       { type: 'memorando', patterns: [
         /memorando/i,
         /memo\s+n[º°.\s]/i,
         /memo\s+\d{1,4}\s*[\/\-]\s*\d{2,4}/i,
         /comunica[cç][aã]o\s+interna/i,
       ], weight: 0.70 },
+
+      // ── Certidões ────────────────────────────────────────────────
+      { type: 'certidao', patterns: [
+        /certifico/i,
+        /dou\s+f[eé]/i,
+        /certid[aã]o/i,
+      ], weight: 0.8 },
+      { type: 'certidao-publicacao', patterns: [
+        /certid[aã]o\s+de\s+publica[cç][aã]o/i,
+        /publicado\s+no\s+di[aá]rio/i,
+        /intima[cç][aã]o\s+eletr[oô]nica/i,
+      ], weight: 0.75 },
+
+      // ── LIXO — documentos irrelevantes ───────────────────────────
+      { type: 'lixo-procuracao', patterns: [
+        /procura[cç][aã]o/i,
+        /poderes/i,
+        /substabelecer/i,
+        /outorg/i,
+        /ad\s+judicia/i,
+      ], weight: 0.8 },
+      { type: 'lixo-substabelecimento', patterns: [
+        /substabelecimento/i,
+        /substabelece/i,
+      ], weight: 0.8 },
+      { type: 'lixo-societario', patterns: [
+        /contrato\s+social/i,
+        /estatuto\s+social/i,
+        /ata\s+de\s+(assembleia|reuni[aã]o)/i,
+        /junta\s+comercial/i,
+        /jucesp/i,
+        /altera[cç][aã]o\s+contratual/i,
+      ], weight: 0.8 },
+      { type: 'lixo-fianca', patterns: [
+        /fian[cç]a\s+banc[aá]ria/i,
+        /carta\s+de\s+fian[cç]a/i,
+        /garantia\s+banc[aá]ria/i,
+        /seguro[- ]garantia/i,
+      ], weight: 0.8 },
+      { type: 'lixo-capa', patterns: [
+        /capa\s+(do\s+)?processo/i,
+        /autuamento/i,
+        /termo\s+de\s+autura[cç][aã]o/i,
+      ], weight: 0.75 },
+      { type: 'lixo-certidao-publicacao', patterns: [
+        /certid[aã]o\s+de\s+publica[cç][aã]o/i,
+        /publicado\s+no\s+di[aá]rio/i,
+        /intima[cç][aã]o\s+gen[eé]rica/i,
+      ], weight: 0.7 },
+      { type: 'lixo-ato-ordinatorio', patterns: [
+        /ato\s+ordinat[oó]rio/i,
+        /cumpra-se/i,
+        /intimem-se/i,
+        /remeta-se/i,
+      ], weight: 0.7 },
+      { type: 'lixo-termo-abertura', patterns: [
+        /termo\s+de\s+(abertura|encerramento)/i,
+        /volume\s+\d/i,
+      ], weight: 0.7 },
     ];
   }
 
   /**
-   * Classify document based on text content
+   * Strip PJe system blocks from text for cleaner classification.
+   * Replicates PageSegmenter._stripPJeBlocks logic.
    */
-  classify(text) {
+  static _stripPJeBlocks(text) {
+    if (!text) return '';
+    let cleaned = text.replace(
+      /Num\.\s*\d+\s*-\s*P[áa]g\.\s*\d+[\s\S]*?Este documento foi gerado[^\n]*/gi,
+      '\n'
+    );
+    cleaned = cleaned.replace(/^Assinado eletronicamente[^\n]*/gim, '');
+    cleaned = cleaned.replace(/^https?:\/\/pje\d?g?\.[\S]*/gim, '');
+    cleaned = cleaned.replace(/^N[úu]mero do documento:[^\n]*/gim, '');
+    cleaned = cleaned.replace(/^Este documento foi gerado[^\n]*/gim, '');
+    cleaned = cleaned.replace(/^Num\.\s*\d+\s*-\s*P[áa]g\.\s*\d+[^\n]*/gim, '');
+    cleaned = cleaned.replace(/\n{3,}/g, '\n\n');
+    return cleaned.trim();
+  }
+
+  /**
+   * Classify document based on text content.
+   * Uses full text with heading/tail boosting for better accuracy.
+   *
+   * @param {string} text - Full text of the document/segment
+   * @param {object} [opts] - Options
+   * @param {string} [opts.heading] - First 3 lines of the segment (boosted 2x)
+   * @param {string} [opts.tail] - Last 3 lines of the segment (boosted 1.5x for signatures)
+   * @returns {{ primary_type: string, confidence: number, indicators: string[] }}
+   */
+  classify(text, opts = {}) {
     if (!text || text.trim().length < 50) {
       return { primary_type: 'unknown', confidence: 0, indicators: [] };
     }
 
-    const sample = text.slice(0, 5000); // First ~3 pages
+    // Strip PJe system blocks before classification (same as PageSegmenter)
+    const cleanedText = DocumentClassifier._stripPJeBlocks(text);
+
+    // Compute heading/tail from cleaned text (always clean, even if provided)
+    // Use 5 lines for heading (more tolerant than segmenter's 3 — classifier needs more signal)
+    const nonEmptyLines = cleanedText.split('\n').map(l => l.trim()).filter(l => l.length > 3);
+    const heading = nonEmptyLines.slice(0, 5).join('\n');
+    const tail = nonEmptyLines.slice(-3).join('\n');
     const scores = [];
 
     for (const rule of this.rules) {
-      const matches = rule.patterns.filter(p => p.test(sample));
-      if (matches.length > 0) {
-        const confidence = Math.min(1, (matches.length / rule.patterns.length) * rule.weight);
+      // Match against full cleaned text
+      const bodyMatches = rule.patterns.filter(p => p.test(cleanedText));
+      // Match against heading (boosted)
+      const headingMatches = heading ? rule.patterns.filter(p => p.test(heading)) : [];
+      // Match against tail (boosted for signature patterns)
+      const tailMatches = tail ? rule.patterns.filter(p => p.test(tail)) : [];
+
+      // Deduplicate: count unique pattern sources that matched anywhere
+      const allMatchSources = new Set([
+        ...bodyMatches.map(m => m.source),
+        ...headingMatches.map(m => m.source),
+        ...tailMatches.map(m => m.source),
+      ]);
+
+      if (allMatchSources.size > 0) {
+        // Base confidence from body matches
+        const bodyRatio = bodyMatches.length / rule.patterns.length;
+        // Heading boost: +0.15 per heading match (capped)
+        const headingBoost = Math.min(0.3, headingMatches.length * 0.15);
+        // Tail boost: +0.1 per tail match (capped)
+        const tailBoost = Math.min(0.2, tailMatches.length * 0.1);
+
+        const rawConfidence = (bodyRatio * rule.weight) + headingBoost + tailBoost;
+        const confidence = Math.min(1, rawConfidence);
+
         scores.push({
           type: rule.type,
           confidence: Math.round(confidence * 100) / 100,
-          indicators: matches.map(m => m.source),
+          indicators: [...allMatchSources],
         });
       }
     }
 
-    // Disambiguation: entity-only matches need structural confirmation
+    // Disambiguation: entity-only matches need structural confirmation.
+    // Many doc types share vocabulary (e.g., any petition mentions "TRF", "acórdão", "turma").
+    // Structural patterns must appear in HEADING to confirm the doc IS that type vs merely referencing it.
+    const disambiguationRules = {
+      'laudo-constitutivo': {
+        structural: [/laudo\s+constitutivo/i, /redu[cç][aã]o\s+do\s+imposto/i, /redu[cç][aã]o\s+do\s+irpj/i, /incentivo\s+fiscal/i, /superintend[eê]ncia/i],
+        entityOnly: [/sudene/i, /adene/i],
+      },
+      'acordao': {
+        structural: [/ac[oó]rd[aã][om]/i, /ementa/i],
+        entityOnly: [/desembargador/i, /v\.?\s*u\.?/i],
+      },
+      'acordao-trf': {
+        structural: [/ac[oó]rd[aã][om]/i, /tribunal\s+regional\s+federal/i],
+        entityOnly: [/trf/i, /turma/i],
+      },
+      'acordao-carf': {
+        structural: [/ac[oó]rd[aã][om]/i, /conselho\s+administrativo\s+de\s+recursos\s+fiscais/i],
+        entityOnly: [/carf/i, /c[aâ]mara/i],
+      },
+      'acordao-csrf': {
+        structural: [/csrf/i, /c[aâ]mara\s+superior/i],
+        entityOnly: [],
+      },
+      'agravo': {
+        structural: [/agravo\s+de\s+instrumento/i, /agravante/i],
+        entityOnly: [/agravo/i, /efeito\s+suspensivo/i],
+      },
+      'recurso-carf': {
+        structural: [/recurso\s+volunt[aá]rio/i, /conselho\s+administrativo\s+de\s+recursos\s+fiscais/i],
+        entityOnly: [/carf/i],
+      },
+      'parecer-agu': {
+        structural: [/parecer\s+agu/i, /advocacia[- ]geral\s+da\s+uni[aã]o/i],
+        entityOnly: [/agu/i],
+      },
+      'parecer-pgfn': {
+        structural: [/parecer\s+pgfn/i, /procuradoria[- ]geral\s+da\s+fazenda/i],
+        entityOnly: [/pgfn/i],
+      },
+      'resposta-fazenda': {
+        structural: [/resposta\s+ao\s+recurso/i, /contrarraz[oõ]es\s+da\s+fazenda/i],
+        entityOnly: [/procuradoria/i, /pgfn/i],
+      },
+      'recurso-admin': {
+        structural: [/recurso\s+(volunt[aá]rio|administrativo)/i, /conselho\s+administrativo/i],
+        entityOnly: [/carf/i],
+      },
+      'distribuicao': {
+        structural: [/certid[aã]o\s+de\s+distribui[cç][aã]o/i],
+        entityOnly: [/distribui[cç][aã]o/i, /relator/i, /c[aâ]mara/i],
+      },
+    };
+
     for (const score of scores) {
-      if (score.type === 'laudo-constitutivo') {
-        const structuralPatterns = [/laudo\s+constitutivo/i, /redu[cç][aã]o\s+do\s+imposto/i, /redu[cç][aã]o\s+do\s+irpj/i, /incentivo\s+fiscal/i, /superintend[eê]ncia/i];
-        const entityOnlyPatterns = [/sudene/i, /adene/i];
-        const hasStructural = structuralPatterns.some(p => p.test(sample));
-        const matchedIndicators = score.indicators.map(src => new RegExp(src, 'i'));
-        const allMatchesAreEntityOnly = matchedIndicators.every(m =>
-          entityOnlyPatterns.some(e => e.source === m.source || e.test(m.source))
-        );
-        if (allMatchesAreEntityOnly && !hasStructural) {
-          score.confidence = Math.round(score.confidence * 0.5 * 100) / 100;
-          score.disambiguation = 'entity-mention-only';
-        }
+      const rule = disambiguationRules[score.type];
+      if (!rule) continue;
+
+      // Check if structural patterns appear in heading (strong signal)
+      const hasStructuralInHeading = heading && rule.structural.some(p => p.test(heading));
+      if (hasStructuralInHeading) continue; // confirmed — skip penalty
+
+      // Check if any structural pattern appears in full cleaned text
+      const hasStructuralInBody = rule.structural.some(p => p.test(cleanedText));
+      const matchedIndicators = score.indicators.map(src => new RegExp(src, 'i'));
+      const allMatchesAreEntityOnly = rule.entityOnly.length > 0 && matchedIndicators.every(m =>
+        rule.entityOnly.some(e => e.source === m.source || e.test(m.source))
+      );
+
+      if (allMatchesAreEntityOnly && !hasStructuralInBody) {
+        // All matches are entity mentions, no structural confirmation → heavy penalty
+        score.confidence = Math.round(score.confidence * 0.3 * 100) / 100;
+        score.disambiguation = 'entity-mention-only';
+      } else if (!hasStructuralInHeading && hasStructuralInBody) {
+        // Structural patterns in body but not heading → mild penalty
+        score.confidence = Math.round(score.confidence * 0.7 * 100) / 100;
+        score.disambiguation = 'structural-not-in-heading';
+      }
+    }
+
+    // Specificity priority: more specific types win over generic ones
+    // E.g., 'inicial-eef' > 'peticao-inicial', 'acordao-carf' > 'acordao'
+    const specificityOrder = [
+      'inicial-eef', 'inicial-execfiscal', 'inicial-ms',
+      'acordao-carf', 'acordao-csrf', 'acordao-trf',
+      'sentenca-edcl',
+      'recurso-carf',
+      'impugnacao-admin', 'defesa-admin', 'decisao-admin-1inst',
+      'parecer-pgfn', 'parecer-agu',
+      'lixo-procuracao', 'lixo-substabelecimento', 'lixo-societario',
+      'lixo-fianca', 'lixo-capa', 'lixo-certidao-publicacao',
+      'lixo-ato-ordinatorio', 'lixo-termo-abertura',
+      'certidao-publicacao',
+    ];
+    for (const score of scores) {
+      const idx = specificityOrder.indexOf(score.type);
+      if (idx !== -1) {
+        score.confidence = Math.round(Math.min(1, score.confidence + 0.05) * 100) / 100;
       }
     }
 
@@ -842,14 +1359,22 @@ class DocumentClassifier {
       return { primary_type: 'unknown', confidence: 0, indicators: [] };
     }
 
+    // Whitelist validation
+    let primaryType = scores[0].type;
+    if (!VALID_TYPES.has(primaryType)) {
+      primaryType = 'unknown';
+    }
+
     const result = {
-      primary_type: scores[0].type,
+      primary_type: primaryType,
       confidence: scores[0].confidence,
       indicators: scores[0].indicators,
     };
 
     if (scores.length > 1 && scores[0].confidence < 0.8) {
-      result.secondary_type = scores[1].type;
+      let secondaryType = scores[1].type;
+      if (!VALID_TYPES.has(secondaryType)) secondaryType = 'unknown';
+      result.secondary_type = secondaryType;
       result.secondary_confidence = scores[1].confidence;
     }
 
@@ -857,4 +1382,4 @@ class DocumentClassifier {
   }
 }
 
-module.exports = { QualityProfiler, DocumentClassifier };
+module.exports = { QualityProfiler, DocumentClassifier, VALID_TYPES };

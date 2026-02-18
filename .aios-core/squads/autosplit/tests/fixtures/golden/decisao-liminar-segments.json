@@ -5,12 +5,19 @@
     {
       "segment_id": "seg-001",
       "type": "piece",
-      "doc_type": "agravo",
-      "classification_source": "profiler-fallback",
+      "doc_type": "inicial-ms",
+      "classification_source": "per-segment-L1",
       "page_start": 1,
       "page_end": 8,
       "confidence": 0.5,
-      "boundary_markers": []
+      "boundary_markers": [],
+      "classification_confidence": 0.95,
+      "classification_indicators": [
+        "mandado\\s+de\\s+seguran[cç]a",
+        "impetrante",
+        "autoridade\\s+coatora",
+        "liminar"
+      ]
     }
   ]
 }

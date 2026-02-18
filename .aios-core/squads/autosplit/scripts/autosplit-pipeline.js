@@ -723,6 +723,67 @@ async function runPipeline(pdfPath, outputDir, options, log, resumeCheckpoint) {
     saveCheckpoint(outputDir, checkpoint, log);
   }
 
+  // ── Stage 5.5: PER-SEGMENT CLASSIFICATION (L1) ────────────────────────
+  {
+    log.info('Stage 5.5: Per-segment classification (L1)');
+    const segClassifier = new DocumentClassifier();
+    let reclassified = 0;
+    let total = 0;
+
+    for (let i = 0; i < allSegments.length; i++) {
+      const { segments } = allSegments[i];
+      const extracted = extractedDataList[i];
+      const pages = extracted.pages || [];
+
+      for (const seg of segments) {
+        if (seg.type === 'separator') continue;
+        total++;
+
+        // Extract full text from this segment's pages
+        const segPages = pages.filter(
+          p => p.page_number >= seg.page_start && p.page_number <= seg.page_end
+        );
+        const segText = segPages.map(p => p.text || '').join('\n');
+        if (segText.trim().length < 50) continue;
+
+        // Extract heading (first 3 non-empty lines) and tail (last 3 non-empty lines)
+        const nonEmptyLines = segText.split('\n').map(l => l.trim()).filter(l => l.length > 3);
+        const heading = nonEmptyLines.slice(0, 3).join('\n');
+        const tail = nonEmptyLines.slice(-3).join('\n');
+
+        const segClassification = segClassifier.classify(segText, { heading, tail });
+
+        // Only override if per-segment confidence is meaningful
+        if (segClassification.primary_type !== 'unknown' && segClassification.confidence >= 0.3) {
+          const prev = seg.doc_type;
+          seg.doc_type = segClassification.primary_type;
+          seg.classification_source = 'per-segment-L1';
+          seg.classification_confidence = segClassification.confidence;
+          seg.classification_indicators = segClassification.indicators;
+          if (prev !== seg.doc_type) {
+            reclassified++;
+            log.verbose(`  Seg ${seg.segment_id}: ${prev} → ${seg.doc_type} (${segClassification.confidence})`);
+          }
+        }
+      }
+    }
+
+    log.info(`Per-segment L1: ${reclassified}/${total} segments reclassified`);
+    audit.log('classify-L1', `Per-segment: ${reclassified}/${total} reclassified`);
+
+    // Re-save segments with updated classification
+    for (let i = 0; i < allSegments.length; i++) {
+      const file = manifest.files[i];
+      const segmentsDir = path.join(outputDir, 'segments');
+      const outPath = path.join(segmentsDir, `${path.parse(file.name).name}-segments.json`);
+      fs.writeFileSync(outPath, JSON.stringify({
+        file: file.name,
+        segments: allSegments[i].segments,
+        segmented_at: new Date().toISOString(),
+      }, null, 2));
+    }
+  }
+
   // ── Stage 6: EXPORT + QC ──────────────────────────────────────────────
   let qcResult = null;
   if (!completedStages.has(6)) {

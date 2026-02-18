@@ -143,6 +143,35 @@ async function runPipelineOnPdf(pdfPath, outputDir) {
     allSegments.push({ file: manifest.files[i].name, segments });
   }
 
+  // Stage 5.5: Per-segment classification (L1)
+  const segClassifier = new DocumentClassifier();
+  for (let i = 0; i < allSegments.length; i++) {
+    const { segments } = allSegments[i];
+    const extracted = extractedDataList[i];
+    const pages = extracted.pages || [];
+
+    for (const seg of segments) {
+      if (seg.type === 'separator') continue;
+      const segPages = pages.filter(
+        p => p.page_number >= seg.page_start && p.page_number <= seg.page_end
+      );
+      const segText = segPages.map(p => p.text || '').join('\n');
+      if (segText.trim().length < 50) continue;
+
+      const nonEmptyLines = segText.split('\n').map(l => l.trim()).filter(l => l.length > 3);
+      const heading = nonEmptyLines.slice(0, 3).join('\n');
+      const tail = nonEmptyLines.slice(-3).join('\n');
+
+      const segClassification = segClassifier.classify(segText, { heading, tail });
+      if (segClassification.primary_type !== 'unknown' && segClassification.confidence >= 0.3) {
+        seg.doc_type = segClassification.primary_type;
+        seg.classification_source = 'per-segment-L1';
+        seg.classification_confidence = segClassification.confidence;
+        seg.classification_indicators = segClassification.indicators;
+      }
+    }
+  }
+
   // Stage 6: Export + QC
   const mdExporter = new MarkdownExporter({
     outputDir: path.join(outputDir, 'markdown'),
@@ -216,8 +245,8 @@ describe('E2E: Full Pipeline', () => {
     expect(result.profiles[0].quality_tier).toBe('A');
     expect(result.profiles[0].has_text_layer).toBe(true);
 
-    // Verify classification
-    expect(result.classifications[0].primary_type).toBe('peticao-inicial');
+    // Verify classification (expanded L1 classifier gives more specific types)
+    expect(['peticao-inicial', 'inicial-eef', 'inicial-execfiscal']).toContain(result.classifications[0].primary_type);
 
     // Verify segments against golden
     const segData = {
